@@ -58,19 +58,30 @@
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	theBuffer	= new RingBuffer<uint8_t>(32 * 32768);
 	connected	= false;
-	hostLineEdit 	= new QLineEdit (NULL);
+    //hostLineEdit 	= new QLineEdit (NULL);
+    remoteSettings -> beginGroup ("rtl_tcp_client");
+    QString ipAddress = remoteSettings ->
+                    value ("remote-server", "0.0.0.0"). toString ();
+    remoteSettings -> endGroup ();
+    hostLineEdit -> setText (ipAddress);
+    hostLineEdit	-> setInputMask ("000.000.000.000");
+
 //
 	connect (tcp_connect, SIGNAL (clicked (void)),
-	         this, SLOT (wantConnect (void)));
+             this, SLOT (setConnection (void)));
 	connect (tcp_disconnect, SIGNAL (clicked (void)),
 	         this, SLOT (setDisconnect (void)));
 	connect (tcp_gain, SIGNAL (valueChanged (int)),
-	         this, SLOT (sendGain (int)));
+             this, SLOT (GainChanged (int)));
 	connect (tcp_ppm, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_fCorrection (int)));
 	connect (khzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_Offset (int)));
+    connect (checkAgc, SIGNAL (stateChanged (int)),
+             this, SLOT (setAgc (int)));
 	state	-> setText ("waiting to start");
+
+    checkAgc->setChecked(true);
 	*success	= true;
 }
 
@@ -96,12 +107,12 @@
 void	rtl_tcp_client::wantConnect (void) {
 QString ipAddress;
 int16_t	i;
-QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
+//QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
 	if (connected)
 	   return;
 	// use the first non-localhost IPv4 address
-	for (i = 0; i < ipAddressesList.size(); ++i) {
+    /*for (i = 0; i < ipAddressesList.size(); ++i) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
 	      ipAddressesList. at (i). toIPv4Address ()) {
 	      ipAddress = ipAddressesList. at(i). toString();
@@ -110,31 +121,28 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	}
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
-	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString ();
-	remoteSettings -> beginGroup ("rtl_tcp_client");
-	ipAddress = remoteSettings ->
-	                value ("remote-server", ipAddress). toString ();
-	remoteSettings -> endGroup ();
-	hostLineEdit -> setText (ipAddress);
+       ipAddress = QHostAddress (QHostAddress::LocalHost).toString ();*/
 
 	hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
 	hostLineEdit	-> show ();
 	state	-> setText ("Give IP address, return");
-	connect (hostLineEdit, SIGNAL (returnPressed (void)),
-	         this, SLOT (setConnection (void)));
+
 }
 
 //	if/when a return is pressed in the line edit,
 //	a signal appears and we are able to collect the
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
-void	rtl_tcp_client::setConnection (void) {
-QString s	= hostLineEdit -> text ();
-QHostAddress theAddress	= QHostAddress (s);
+void	rtl_tcp_client::setConnection (void) {   
+    if (connected)
+       return;
+
+    QString s	= hostLineEdit -> text ();
+    QHostAddress theAddress	= QHostAddress (s);
 
 	serverAddress	= QHostAddress (s);
-	basePort	= 1234;
+	basePort	= 1235;
 	disconnect (hostLineEdit, SIGNAL (returnPressed (void)),
 	            this, SLOT (setConnection (void)));
 	toServer. connectToHost (serverAddress, basePort);
@@ -156,6 +164,10 @@ QHostAddress theAddress	= QHostAddress (s);
 
 	sendGain (theGain);
 	sendRate (theRate);
+    if (checkAgc -> isChecked ())
+        setAgc(true);
+    else
+        setAgc(false);
 	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
 	toServer. waitForBytesWritten ();
 	state -> setText ("Connected");
@@ -203,6 +215,18 @@ int32_t	rtl_tcp_client::getVFOFrequency	(void) {
 }
 
 bool	rtl_tcp_client::restartReader	(void) {
+
+    /*// In case we are connected, disconnect first
+    if(connected)
+        setDisconnect();
+
+    // Connect again
+    setConnection();*/
+
+    if(!connected)
+        setConnection();
+
+    // Check connection
 	if (!connected)
 	   return false;
 	connect (&toServer, SIGNAL (readyRead (void)),
@@ -237,6 +261,10 @@ int32_t	rtl_tcp_client::Samples	(void) {
 //
 uint8_t	rtl_tcp_client::myIdentity	(void) {
 	return DAB_STICK;
+}
+
+QFrame* rtl_tcp_client::getFrame  (void) {
+    return this	-> theFrame;
 }
 
 //
@@ -286,7 +314,16 @@ void	rtl_tcp_client::sendRate (int32_t theRate) {
 	sendCommand (0x02, theRate);
 }
 
+void	rtl_tcp_client::setGainMode (int32_t gainMode) {
+    sendCommand (0x03, gainMode);
+}
 //
+void	rtl_tcp_client::GainChanged (int gain) {
+    checkAgc->setChecked(false);
+    theGain		= gain;
+    sendGain(gain);
+}
+
 void	rtl_tcp_client::sendGain (int gain) {
 	sendCommand (0x04, 10 * gain);
 	theGain		= gain;
@@ -319,3 +356,14 @@ void	rtl_tcp_client::set_Offset	(int32_t o) {
 	vfoOffset	= o;
 }
 
+void	rtl_tcp_client::setAgc	(int state) {
+    if (checkAgc -> isChecked ())
+    {
+        setGainMode(0);
+    }
+    else
+    {
+        setGainMode(1);
+        sendGain(tcp_gain->text().toInt());
+    }
+}
