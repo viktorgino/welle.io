@@ -21,6 +21,7 @@
  */
 #include	"ofdm-processor.h"
 #include	"ofdm-decoder.h"
+#include	"find_ofdm_spectrum.h"
 #include	"gui.h"
 #include	"fft.h"
 //
@@ -100,6 +101,8 @@ int32_t	i;
 	         myRadioInterface, SLOT (set_coarseCorrectorDisplay (int)));
 	connect (this, SIGNAL (setSynced (char)),
 	         myRadioInterface, SLOT (setSynced (char)));
+	connect (this, SIGNAL (setSignalPresent (bool)),
+	         myRadioInterface, SLOT (setSignalPresent (bool)));
 
 	gain		= 30;
 	bufferContent	= 0;
@@ -268,6 +271,28 @@ Initing:
 	      sLevel		+= jan_abs (getSample (0));
 	   }
 
+       find_ofdm_spectrum FindODFMSpectrum (T_u, params -> K);
+
+checkSignal:
+//	Put samples into the signal checker
+       getSamples (*FindODFMSpectrum. GetBuffer (),
+                    FindODFMSpectrum. GetBufferSize (), 0);
+
+       float ODFMSpectrum = FindODFMSpectrum. FindSpectrum ();
+//	Check it peak of the cross correlation.
+//	1 is the maximum similarity, 0 means the signals are not similar.
+//	Experiments showed that 0.85 similarity indicates a real OFDM spectrum
+       if (ODFMSpectrum < 0.85) {
+              goto checkSignal;
+       }
+       else {
+          fprintf (stderr,
+                   "OFDM spectrum correlation coefficient = %f\n",
+                    ODFMSpectrum);
+              isReset = false;
+              //setSignalPresent (true);
+       }
+
 ///	when really out of sync we will be here
 notSynced:
 //	read in T_s samples for a next attempt;
@@ -302,7 +327,10 @@ SyncOnNull:
 	                      (syncBufferIndex + 1) & syncBufferMask;
 	      counter ++;
 	      if (counter > 2 * T_s)	// hopeless
-	         goto notSynced;
+              if(isReset)
+                  goto checkSignal;
+              else
+                  goto notSynced;
 	   }
 
 /**
@@ -319,7 +347,10 @@ SyncOnEndNull:
 	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
 	      counter	++;
 	      if (counter > 3 * T_s)	// hopeless
-	         goto notSynced;
+              if(isReset)
+                  goto checkSignal;
+              else
+                  goto notSynced;
 	   }
 /**
   *	The end of the null period is identified, probably about 40
@@ -484,6 +515,8 @@ ReadyForNewFrame:
 void	ofdmProcessor:: reset	(void) {
 	fineCorrector = coarseCorrector = 0;
 	f2Correction	= true;
+    isReset = true;
+    setSignalPresent(false);
 }
 
 void	ofdmProcessor::stop	(void) {

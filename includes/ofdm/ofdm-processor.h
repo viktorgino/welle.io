@@ -100,6 +100,7 @@ private:
 	void		getSamples	(DSPCOMPLEX *, int16_t, int32_t);
 virtual	void		run		(void);
 	int32_t		bufferContent;
+	bool        isReset;
 	int16_t		processBlock_0	(DSPCOMPLEX *);
 	int16_t		getMiddle	(DSPCOMPLEX *);
 	common_fft	*fft_handler;
@@ -108,6 +109,7 @@ signals:
 	void		show_fineCorrector	(int);
 	void		show_coarseCorrector	(int);
 	void		setSynced		(char);
+    void        setSignalPresent (bool);
 };
 #endif
 
