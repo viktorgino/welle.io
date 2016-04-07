@@ -31,11 +31,11 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	set(GUI_1 true)
 
 #	if you want support for any of these devices, uncomment the line
-	set(SDRPLAY true)
-	set(AIRSPY true)
+#	set(SDRPLAY true)
+#	set(AIRSPY true)
 	set(DABSTICK_OSMO true)
 #	set(DABSTICK_NEW true)
-#	set(RTLTCP true)
+	set(RTLTCP true)
 
 
 #	add_definitions (-DSIMPLE_SYNCHRONIZATION)
@@ -129,6 +129,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
+	     ./includes/ofdm/find_ofdm_spectrum.h
 	     ./includes/backend/viterbi.h
 	     ./includes/backend/msc-handler.h
 	     ./includes/backend/deconvolve.h
@@ -167,6 +168,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
+	     ./src/ofdm/find_ofdm_spectrum.cpp
 	     ./src/backend/viterbi.cpp
 	     ./src/backend/fic-handler.cpp
 	     ./src/backend/msc-handler.cpp
