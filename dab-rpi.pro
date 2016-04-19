@@ -8,13 +8,13 @@ TEMPLATE	= app
 TARGET		= dab-rpi-0.996
 QT		+= widgets network
 CONFIG		+= console
-QMAKE_CFLAGS	+=  -flto -ffast-math 
-QMAKE_CXXFLAGS	+=  -flto -ffast-math 
-QMAKE_LFLAGS	+=  -flto 
+QMAKE_CFLAGS	+=  -flto -ffast-math -g
+QMAKE_CXXFLAGS	+=  -flto -ffast-math -g
+QMAKE_LFLAGS	+=  -flto -g
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-CONFIG		+= NO_SSE_SUPPORT 
+#CONFIG		+= NO_SSE_SUPPORT
 #DEFINES	+= SIMPLE_SYNCHRONIZATION
 #DEFINES	+= FULL_CORRELATION
 DEPENDPATH += . \
@@ -57,6 +57,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
 	   ./includes/ofdm/freq-interleaver.h \
+           ./includes/ofdm/find_ofdm_spectrum.h \
 	   ./includes/backend/viterbi.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
@@ -86,7 +87,8 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/various/Xtan2.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
-	   ./src/input/wavfiles/wavfiles.h 
+	   ./src/input/wavfiles/wavfiles.h \ 
+    gui_2/stationelement.h
 
 FORMS += ./src/input/filereader-widget.ui 
 
@@ -96,6 +98,7 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
+           ./src/ofdm/find_ofdm_spectrum.cpp \
 	   ./src/backend/viterbi.cpp \
 	   ./src/backend/fic-handler.cpp \
 	   ./src/backend/msc-handler.cpp \
@@ -124,7 +127,8 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
-	   ./src/input/wavfiles/wavfiles.cpp 
+	   ./src/input/wavfiles/wavfiles.cpp \ 
+    gui_2/stationelement.cpp
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -138,7 +142,7 @@ CONFIG		+= rtl_tcp
 #CONFIG		+= airspy-exp
 #CONFIG		+= tcp-streamer		# use for remote listening
 #CONFIG		+= rtp-streamer		# remote using rtp (very immature)
-CONFIG		+= gui_1
+CONFIG		+= gui_2
 DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 DESTDIR		= ./linux-bin
@@ -177,7 +181,7 @@ CONFIG		+= dabstick_osmo
 #CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer
 #CONFIG		+= rtp-streamer
-CONFIG		+= gui_1
+CONFIG		+= gui_2
 }
 
 NO_SSE_SUPPORT {
@@ -197,6 +201,19 @@ gui_1	{
 	FORMS 		+= ./gui_1/gui_1.ui 
 	HEADERS		+= ./gui_1/gui.h
 	SOURCES		+= ./gui_1/gui.cpp
+}
+
+gui_2	{
+        DEFINES		+= GUI_2
+        QT		+= qml quick
+        INCLUDEPATH	+= ./gui_2
+        DEPENDPATH	+= ./gui_2
+        FORMS 		+= ./gui_2/gui_2.ui
+        HEADERS		+= ./gui_2/gui.h
+        SOURCES		+= ./gui_2/gui.cpp
+
+        RESOURCES += \
+            gui_2/touch_gui_resource.qrc
 }
 	
 #	devices
@@ -334,4 +351,6 @@ rtl_tcp {
 #	LIBS+=  -lqwt -lusb -lrt -lportaudio  -lsndfile -lfftw3  -lrtlsdr -lz
 #	LIBS += -lfaad
 #}
+
+
 

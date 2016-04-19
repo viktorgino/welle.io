@@ -32,6 +32,11 @@
 #include	<unistd.h>
 #include	"dab-constants.h"
 #include	"gui.h"
+#ifdef GUI_2
+/*#include <QtQml/QQmlApplicationEngine>
+#include <QQmlContext>
+#include "stationelement.h"*/
+#endif
 
 void	fullPathfor (const char *v, char *out) {
 int16_t	i;
@@ -89,16 +94,18 @@ RadioInterface	*MyRadioInterface;
 int32_t		opt;
 
 	fullPathfor (DEFAULT_INI, defaultInit);
-	while ((opt = getopt (argc, argv, "LABCi:")) != -1) {
+
+    // not working with QML debugger
+    /*while ((opt = getopt (argc, argv, "LABCi:")) != -1) {
 	   switch (opt) {
-	      case 'i':
+          case 'i':
 	         fullPathfor (optarg, defaultInit);
 	         break;
 
 	      default:
 	         break;
 	   }
-	}
+    }*/
 
 	ISettings	= new QSettings (defaultInit, QSettings::IniFormat);
 /*
@@ -106,8 +113,14 @@ int32_t		opt;
  *	instantiate
  */
 	QApplication a (argc, argv);
+#ifdef GUI_1
 	MyRadioInterface = new RadioInterface (ISettings);
 	MyRadioInterface -> show ();
+#endif
+#ifdef GUI_2
+    QQmlApplicationEngine engine(QUrl("qrc:/QML/main.qml"));
+    MyRadioInterface = new RadioInterface (ISettings, &engine);
+#endif
 	a. exec ();
 /*
  *	done:

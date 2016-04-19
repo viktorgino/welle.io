@@ -31,13 +31,12 @@
 #include	<QMessageBox>
 /*
  */
-	audioSink::audioSink	(int16_t latency,
-	                         QComboBox *s,
-	                         RingBuffer<int16_t> *b): audioBase (b) {
+    audioSink::audioSink	(int16_t latency,
+                             QStringList *s,
+                             RingBuffer<int16_t> *b): audioBase (b) {
 int32_t	i;
 	this	-> latency	= latency;
-	this	-> streamSelector	= s;
-
+    this	-> InterfaceList	= s;
 	this	-> CardRate	= 48000;
 	this	-> latency	= latency;
 	_O_Buffer		= new RingBuffer<float>(2 * 32768);
@@ -60,10 +59,10 @@ int32_t	i;
 	for (i = 0; i < numofDevices; i ++)
 	   outTable [i] = -1;
 	ostream		= NULL;
-	setupChannels (streamSelector);
-	connect (streamSelector, SIGNAL (activated (int)),
-	         this,  SLOT (set_streamSelector (int)));
-	streamSelector	-> show ();
+    setupChannels (InterfaceList);
+    /*connect (InterfaceList, SIGNAL (activated (int)),
+             this,  SLOT (set_streamSelector (int)));*/
+    //InterfaceList	-> show ();
 	selectDefaultDevice ();
 	
 }
@@ -85,7 +84,7 @@ int32_t	i;
 
 	delete	_O_Buffer;
 	delete[] outTable;
-	streamSelector	-> hide ();
+    //InterfaceList	-> hide ();
 }
 
 //
@@ -252,7 +251,7 @@ int32_t	audioSink::cardRate	(void) {
 	return 48000;
 }
 
-bool	audioSink::setupChannels (QComboBox *streamOutSelector) {
+bool	audioSink::setupChannels (QStringList *streamOutSelector) {
 uint16_t	ocnt	= 1;
 uint16_t	i;
 
@@ -262,7 +261,8 @@ uint16_t	i;
 	   qDebug ("Investigating Device %d\n", i);
 
 	   if (so != QString ("")) {
-	      streamOutSelector -> insertItem (ocnt, so, QVariant (i));
+          //streamOutSelector -> insertItem (ocnt, so, QVariant (i));
+           streamOutSelector->append(so);
 	      outTable [ocnt] = i;
 	      qDebug (" (output):item %d wordt stream %d (%s)\n", ocnt , i,
 	                      so. toLatin1 ().data ());

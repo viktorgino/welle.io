@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/">
+        <file>QML/AndroidDelegate.qml</file>
+        <file>QML/main.qml</file>
+        <file>QML/RadioView.qml</file>
+        <file>QML/SettingsPage.qml</file>
+        <file>QML/images/button_default.png</file>
+        <file>QML/images/button_pressed.png</file>
+        <file>QML/images/icon-settings.png</file>
+        <file>QML/images/navigation_next_item.png</file>
+        <file>QML/images/navigation_previous_item.png</file>
+        <file>QML/images/tab_selected.png</file>
+        <file>QML/images/tabs_standard.png</file>
+        <file>QML/images/textinput.png</file>
+        <file>QML/images/toolbar.png</file>
+    </qresource>
+</RCC>

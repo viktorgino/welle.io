@@ -28,16 +28,13 @@
 #define _GUI
 
 #include	"dab-constants.h"
-#include	<QMainWindow>
-#include	<QStringList>
-#include	<QStringListModel>
-#include	<QUdpSocket>
-#include	<QComboBox>
-#include	<QLabel>
 #include	<sndfile.h>
-#ifdef	GUI_1
-#include	"ui_gui_1.h"
+#ifdef	GUI_2
+#include	"ui_gui_2.h"
 #include	<QTimer>
+#include    <QtQml/QQmlApplicationEngine>
+#include    <QQmlContext>
+#include    "stationelement.h"
 #endif
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
@@ -51,26 +48,23 @@ class	ficHandler;
 
 class	common_fft;
 
-#ifdef	TCP_STREAMER
-class	tcpStreamer;
-#elif	RTP_STREAMER
-class	rtpStreamer;
-#endif
+
 /*
  *	GThe main gui object. It inherits from
  *	QDialog and the generated form
  */
-class RadioInterface: public QMainWindow,
-		      private Ui_dab_rpi {
+class RadioInterface: public QObject{
 Q_OBJECT
+
 public:
-		RadioInterface		(QSettings	*,
-	                                 QWidget *parent = NULL);
+        RadioInterface		(QSettings	*, QQmlApplicationEngine *,
+                                     QObject *parent = NULL);
 		~RadioInterface		();
 
 private:
 	QSettings	*dabSettings;
-	bool		autoStart;
+    QQmlApplicationEngine *engine;
+    bool		autoStart;
 	int16_t		threshold;
 	int32_t		vfoFrequency;
 	void		setupChannels		(QComboBox *s, uint8_t band);
@@ -90,27 +84,15 @@ private:
 const	char		*get_programm_type_string (uint8_t);
 const	char		*get_programm_language_string (uint8_t);
 	QLabel		*pictureLabel;
-	QUdpSocket	DSCTy_59_socket;
 	QString		ipAddress;
 	int32_t		port;
 	bool		show_crcErrors;
 	void		init_your_gui		(void);
 	void		dumpControlState	(QSettings *);
-#ifdef	GUI_1
-	FILE		*crcErrors_File;
-	bool		sourceDumping;
-	SNDFILE		*dumpfilePointer;
-	bool		audioDumping;
-	SNDFILE		*audiofilePointer;
-	QStringListModel	ensemble;
-	QStringList	Services;
-	QString		ensembleLabel;
-	QTimer		*displayTimer;
-	int32_t		numberofSeconds;
-	void		resetSelector		(void);
-	int16_t		ficBlocks;
-	int16_t		ficSuccess;
-#endif
+    int16_t		ficBlocks;
+    int16_t		ficSuccess;
+    QString     CurrentChannel;
+
 public slots:
 	void	set_fineCorrectorDisplay	(int);
 	void	set_coarseCorrectorDisplay	(int);
@@ -127,27 +109,33 @@ public slots:
 	void	changeinConfiguration	(void);
 	void	newAudio		(int);
 //
-    void	show_mscErrors		(int^);
+	void	show_mscErrors		(int);
 	void	show_ipErrors		(int);
 private slots:
 //
 //	Somehow, these must be connected to the GUI
 //	We assume that any GUI will need these three:
-	void	setStart		(void);
-	void	TerminateProcess	(void);
-	void	set_channelSelect	(QString);
-#ifdef	GUI_1
-	void	updateTimeDisplay	(void);
+    void	setStart		(void);
+    void	TerminateProcess	(void);
+    void	set_channelSelect	(QString);
+#ifdef	GUI_2
+    void	updateTimeDisplay	(void);
 
-	void	autoCorrector_on	(void);
+    void	autoCorrector_on	(void);
 
-	void	set_modeSelect		(const QString &);
-	void	set_bandSelect		(QString);
-	void	setDevice		(QString);
-	void	selectService		(QModelIndex);
-	void	set_dumping		(void);
-	void	set_audioDump		(void);
+    void	set_modeSelect		(const QString &);
+    void	set_bandSelect		(QString);
+    void	setDevice		(QString);
+    void	selectService		(QModelIndex);
+    void	set_dumping		(void);
+    void	set_audioDump		(void);
 #endif
+    void    channelClick(QString, QString);
+
+signals:
+    void testSignal(QString text);
+    void syncFlag(bool active);
+    void ficFlag(bool active);
 };
 
 #endif
