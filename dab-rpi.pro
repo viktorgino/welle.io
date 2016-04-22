@@ -57,12 +57,13 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
 	   ./includes/ofdm/freq-interleaver.h \
-           ./includes/ofdm/find_ofdm_spectrum.h \
+       ./includes/ofdm/find_ofdm_spectrum.h \
 	   ./includes/backend/viterbi.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
 	   ./includes/backend/fib-processor.h  \
 	   ./includes/backend/rscodec.h \
+	   ./includes/backend/rs-decoder.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/dab-processor.h \
@@ -87,7 +88,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/various/Xtan2.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
-           ./src/input/wavfiles/wavfiles.h
+	   ./src/input/wavfiles/wavfiles.h 
 
 FORMS += ./src/input/filereader-widget.ui 
 
@@ -97,13 +98,14 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
-           ./src/ofdm/find_ofdm_spectrum.cpp \
+       ./src/ofdm/find_ofdm_spectrum.cpp \
 	   ./src/backend/viterbi.cpp \
 	   ./src/backend/fic-handler.cpp \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/deconvolve.cpp \
 	   ./src/backend/fib-processor.cpp  \
 	   ./src/backend/rscodec.cpp \
+	   ./src/backend/rs-decoder.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/dab-virtual.cpp \
@@ -126,7 +128,7 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
-           ./src/input/wavfiles/wavfiles.cpp
+	   ./src/input/wavfiles/wavfiles.cpp 
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -199,6 +201,14 @@ gui_1	{
 	FORMS 		+= ./gui_1/gui_1.ui 
 	HEADERS		+= ./gui_1/gui.h
 	SOURCES		+= ./gui_1/gui.cpp
+}
+
+gui_2	{
+	DEFINES		+= GUI_2
+	INCLUDEPATH	+= ./gui_2
+	DEPENDPATH	+= ./gui_2
+	HEADERS		+= ./gui_2/gui.h
+	SOURCES		+= ./gui_2/gui.cpp
 }
 
 gui_3	{
@@ -350,6 +360,4 @@ rtl_tcp {
 #	LIBS+=  -lqwt -lusb -lrt -lportaudio  -lsndfile -lfftw3  -lrtlsdr -lz
 #	LIBS += -lfaad
 #}
-
-
 
