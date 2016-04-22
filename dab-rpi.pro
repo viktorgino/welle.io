@@ -181,7 +181,7 @@ CONFIG		+= dabstick_osmo
 #CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer
 #CONFIG		+= rtp-streamer
-CONFIG		+= gui_3
+CONFIG		+= gui_1
 }
 
 NO_SSE_SUPPORT {
@@ -202,7 +202,7 @@ gui_1	{
 	HEADERS		+= ./gui_1/gui.h
 	SOURCES		+= ./gui_1/gui.cpp
 }
-
+	
 gui_2	{
 	DEFINES		+= GUI_2
 	INCLUDEPATH	+= ./gui_2
