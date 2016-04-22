@@ -87,8 +87,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/various/Xtan2.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
-	   ./src/input/wavfiles/wavfiles.h \ 
-    gui_2/stationelement.h
+           ./src/input/wavfiles/wavfiles.h
 
 FORMS += ./src/input/filereader-widget.ui 
 
@@ -127,8 +126,7 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
-	   ./src/input/wavfiles/wavfiles.cpp \ 
-    gui_2/stationelement.cpp
+           ./src/input/wavfiles/wavfiles.cpp
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -142,7 +140,7 @@ CONFIG		+= rtl_tcp
 #CONFIG		+= airspy-exp
 #CONFIG		+= tcp-streamer		# use for remote listening
 #CONFIG		+= rtp-streamer		# remote using rtp (very immature)
-CONFIG		+= gui_2
+CONFIG		+= gui_3
 DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 DESTDIR		= ./linux-bin
@@ -181,7 +179,7 @@ CONFIG		+= dabstick_osmo
 #CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer
 #CONFIG		+= rtp-streamer
-CONFIG		+= gui_2
+CONFIG		+= gui_3
 }
 
 NO_SSE_SUPPORT {
@@ -203,17 +201,18 @@ gui_1	{
 	SOURCES		+= ./gui_1/gui.cpp
 }
 
-gui_2	{
-        DEFINES		+= GUI_2
+gui_3	{
+        DEFINES		+= GUI_3
         QT		+= qml quick
-        INCLUDEPATH	+= ./gui_2
-        DEPENDPATH	+= ./gui_2
-        FORMS 		+= ./gui_2/gui_2.ui
-        HEADERS		+= ./gui_2/gui.h
-        SOURCES		+= ./gui_2/gui.cpp
+        INCLUDEPATH	+= ./gui_3
+        DEPENDPATH	+= ./gui_3
+        HEADERS		+= ./gui_3/gui.h \
+                           ./gui_3/stationelement.h
+        SOURCES		+= ./gui_3/gui.cpp \
+                           ./gui_3/stationelement.cpp
 
         RESOURCES += \
-            gui_2/touch_gui_resource.qrc
+            gui_3/touch_gui_resource.qrc
 }
 	
 #	devices

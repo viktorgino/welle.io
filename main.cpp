@@ -32,11 +32,6 @@
 #include	<unistd.h>
 #include	"dab-constants.h"
 #include	"gui.h"
-#ifdef GUI_2
-/*#include <QtQml/QQmlApplicationEngine>
-#include <QQmlContext>
-#include "stationelement.h"*/
-#endif
 
 void	fullPathfor (const char *v, char *out) {
 int16_t	i;
@@ -117,7 +112,7 @@ int32_t		opt;
 	MyRadioInterface = new RadioInterface (ISettings);
 	MyRadioInterface -> show ();
 #endif
-#ifdef GUI_2
+#ifdef GUI_3
     QQmlApplicationEngine engine(QUrl("qrc:/QML/main.qml"));
     MyRadioInterface = new RadioInterface (ISettings, &engine);
 #endif

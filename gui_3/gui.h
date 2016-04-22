@@ -29,8 +29,10 @@
 
 #include	"dab-constants.h"
 #include	<sndfile.h>
-#ifdef	GUI_2
-#include	"ui_gui_2.h"
+#include    <QComboBox>
+#include    <QLabel>
+
+#ifdef	GUI_3
 #include	<QTimer>
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
@@ -118,7 +120,7 @@ private slots:
     void	setStart		(void);
     void	TerminateProcess	(void);
     void	set_channelSelect	(QString);
-#ifdef	GUI_2
+#ifdef	GUI_3
     void	updateTimeDisplay	(void);
 
     void	autoCorrector_on	(void);
