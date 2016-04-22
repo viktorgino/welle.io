@@ -62,8 +62,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
 	   ./includes/backend/fib-processor.h  \
-	   ./includes/backend/rscodec.h \
-	   ./includes/backend/rs-decoder.h \
+           ./includes/backend/rs-decoder.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/dab-processor.h \
@@ -104,8 +103,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/deconvolve.cpp \
 	   ./src/backend/fib-processor.cpp  \
-	   ./src/backend/rscodec.cpp \
-	   ./src/backend/rs-decoder.cpp \
+           ./src/backend/rs-decoder.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/dab-virtual.cpp \
