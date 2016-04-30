@@ -21,48 +21,54 @@ Item{
             spacing: 2
 
             Rectangle{
+                id: signalBar1
                 height: 4
                 width: 4
-                color: "green"
+                color: "grey"
             }
             Rectangle{
+                id: signalBar2
                 height: 8
                 width: 4
-                color: "green"
+                color: "grey"
             }
             Rectangle{
+                id: signalBar3
                 height: 12
                 width: 4
-                color: "green"
+                color: "grey"
             }
             Rectangle{
+                id: signalBar4
                 height: 16
                 width: 4
-                color: "green"
+                color: "grey"
             }
 
             Rectangle{
+                id: signalBar5
                 height: 20
                 width: 4
-                color: "green"
+                color: "grey"
             }
         }
 
         Text {
+            id: bitrateText
             text: "96 kbps"
             color: "white"
             font.pixelSize: 13
         }
 
         Text {
+            id: dabTypeText
             text: "DAB+"
             color: "white"
             font.pixelSize: 13
         }
 
         Text {
-           /* anchors.right: flags.left
-            anchors.rightMargin: 5*/
+            id: audioTypeText
             text: "Stereo"
             color: "white"
             font.pixelSize: 13
@@ -109,8 +115,15 @@ Item{
 
     Connections{
         target: cppGUI
-        onTestSignal:{
+        onCurrentStation:{
             currentStation.text = text
+        }
+
+        onSignalFlag:{
+            if(active)
+                signal.color = "green"
+            else
+                signal.color = "red"
         }
 
         onSyncFlag:{
@@ -126,6 +139,37 @@ Item{
             else
                 fic.color = "red"
         }
+
+        onBitrate: {
+            bitrateText.text = bitrate +  " kbps"
+        }
+
+        onDabType: {
+            dabTypeText.text = text
+        }
+
+        onAudioType: {
+            if(isStereo)
+                audioTypeText.text = "Stereo"
+            else
+                audioTypeText.text = "Mono"
+        }
+
+        onStationType: {
+            stationTypeText.text = text
+        }
+
+        onLanguageType: {
+            languageTypeText.text = text
+        }
+
+        onSignalPower: {
+            if(power > 15) signalBar5.color = "green"; else signalBar5.color = "grey"
+            if(power > 11) signalBar4.color = "green"; else signalBar4.color = "grey"
+            if(power > 8) signalBar3.color = "green"; else signalBar3.color = "grey"
+            if(power > 5) signalBar2.color = "green"; else signalBar2.color = "grey"
+            if(power > 2) signalBar1.color = "green"; else signalBar1.color = "grey"
+        }
     }
 
     RowLayout{
@@ -136,6 +180,7 @@ Item{
         width: parent.width
 
         Text {
+            id: languageTypeText
             anchors.left: parent.left
             anchors.leftMargin: 5
             text: "German"
@@ -144,6 +189,7 @@ Item{
         }
 
         Text {
+            id: stationTypeText
             anchors.right: parent.right
             anchors.rightMargin: 5
             text: "Information"

@@ -37,6 +37,7 @@
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
 #include    "stationelement.h"
+#include    "motimageprovider.h"
 #endif
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
@@ -93,7 +94,14 @@ const	char		*get_programm_language_string (uint8_t);
 	void		dumpControlState	(QSettings *);
     int16_t		ficBlocks;
     int16_t		ficSuccess;
+#ifdef	GUI_3
+    QTimer      CheckFICTimer;
+    MOTImageProvider *MOTImage;
+
     QString     CurrentChannel;
+    QString     CurrentStation;
+    bool        isFICCRC;
+#endif
 
 public slots:
 	void	set_fineCorrectorDisplay	(int);
@@ -113,6 +121,8 @@ public slots:
 //
 	void	show_mscErrors		(int);
 	void	show_ipErrors		(int);
+    void    setStereo		(bool isStereo);
+    void    setSignalPresent (bool isSignal);
 private slots:
 //
 //	Somehow, these must be connected to the GUI
@@ -131,13 +141,22 @@ private slots:
     void	selectService		(QModelIndex);
     void	set_dumping		(void);
     void	set_audioDump		(void);
+    void    CheckFICTimerTimeout    (void);
 #endif
     void    channelClick(QString, QString);
 
 signals:
-    void testSignal(QString text);
+    void currentStation(QString text);
+    void signalFlag(bool active);
     void syncFlag(bool active);
     void ficFlag(bool active);
+    void dabType(QString text);
+    void bitrate(int bitrate);
+    void audioType(bool isStereo);
+    void stationType(QString text);
+    void languageType(QString text);
+    void signalPower(int power);
+    void motChanged(void);
 };
 
 #endif

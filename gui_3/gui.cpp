@@ -157,6 +157,19 @@ int16_t	latency;
     }
     dabSettings->endGroup();
 
+    // Set timer
+    connect(&CheckFICTimer, SIGNAL(timeout()),this, SLOT(CheckFICTimerTimeout()));
+
+    // Reset
+    isFICCRC = false;
+
+    // Add image provider for the MOT slide show
+    MOTImage = new MOTImageProvider;
+    engine->addImageProvider(QLatin1String("motslideshow"), MOTImage);
+
+    // Load QML file
+    engine->load(QUrl("qrc:/QML/main.qml"));
+
     // Set the stations
     QQmlContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("stationModel", QVariant::fromValue(dataList));
@@ -167,6 +180,9 @@ int16_t	latency;
 
     // Connect signals
     connect(rootObject, SIGNAL(qmlSignal(QString,QString)),this, SLOT(channelClick(QString,QString)));
+
+    // Add image provider for the MOT slide show
+    engine->addImageProvider(QLatin1String("motslideshow"), new MOTImageProvider);
 }
 
 	RadioInterface::~RadioInterface () {
@@ -529,13 +545,14 @@ void	RadioInterface::show_successRate (int s) {
 void	RadioInterface::show_ficCRC (bool b) {
 #ifdef	GUI_3
     emit ficFlag(b);
+    isFICCRC = b;
 #endif
 }
 
 ///	called from the ofdmDecoder, which computed this for each frame
 void	RadioInterface::show_snr (int s) {
 #ifdef	GUI_3
-    //snrDisplay	-> display (s);
+    emit signalPower(s);
 #endif
 }
 
@@ -580,22 +597,21 @@ void	RadioInterface::showMOT		(QByteArray data, int subtype) {
 	if (running)
 	   pictureLabel	= new QLabel (NULL);
 
-	QPixmap p;
+    QPixmap p(320,240);
 	p. loadFromData (data, subtype == 0 ? "GIF" :
 	                       subtype == 1 ? "JPEG" :
 	                       subtype == 2 ? "BMP" : "PNG");
-	pictureLabel ->  setPixmap (p);
-	pictureLabel ->  show ();
+  /*  pictureLabel ->  setPixmap (p);
+    pictureLabel ->  show ();*/
+
+    MOTImage->setPixmap(p);
+    emit motChanged();
 #endif
 }
 
 //
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(char *data, int length) {
-/*	if (running)
-    DSCTy_59_socket. writeDatagram (data, length,
-	                                QHostAddress (ipAddress),
-                                    port);*/
 }
 
 /**
@@ -640,28 +656,36 @@ void	RadioInterface::show_ipErrors	(int er) {
                                                             er);*/
 #endif
 }
+
+void    RadioInterface::setStereo (bool isStereo) {
+#ifdef	GUI_3
+    emit audioType(isStereo);
+#endif
+}
+
+void    RadioInterface::setSignalPresent (bool isSignal) {
+#ifdef	GUI_3
+    //isSignalPresent = isSignal;
+
+    emit signalFlag(isSignal);
+
+    /*if(isSignal)
+    {
+        CLED_SIGNAL->SetLight(CMultColorLED::RL_GREEN);
+        //LabelServiceLabel->setText("Syncing ...");
+    }
+    else
+    {
+        CLED_SIGNAL->SetLight(CMultColorLED::RL_RED);
+    }*/
+#endif
+}
+
 //
 //	This function is only used in the Gui to clear
 //	the details of a selection
 void	RadioInterface::clear_showElements (void) {
 #ifdef	GUI_3
-    /*Services = QStringList ();
-	ensemble. setStringList (Services);
-	ensembleDisplay		-> setModel (&ensemble);
-	my_ficHandler		-> clearEnsemble ();
-
-	ensembleLabel		= QString ();
-	ensembleName		-> setText (ensembleLabel);
-	dynamicLabel		-> setText ("");
-	
-//	Then the various displayed items
-	ensembleName		-> setText ("   ");
-	errorDisplay		-> display (0);
-	ficRatioDisplay		-> display (0);
-	snrDisplay		-> display (0);
-	if (pictureLabel != NULL)
-	   delete pictureLabel;
-    pictureLabel = NULL;*/
 #endif
 }
 
@@ -705,19 +729,6 @@ bool	r = 0;
 void	RadioInterface::TerminateProcess (void) {
 	running		= false;
 #ifdef	GUI_3
-    /*displayTimer	-> stop ();
-	if (sourceDumping) {
-	   my_ofdmProcessor	-> stopDumping ();
-	   sf_close (dumpfilePointer);
-	}
-
-	if (audioDumping) {
-	   soundOut	-> stopDumping ();
-	   sf_close (audiofilePointer);
-	}
-
-	if (crcErrors_File != NULL)
-       fclose (crcErrors_File);*/
 #endif
 	inputDevice		-> stopReader ();	// might be concurrent
 	my_mscHandler		-> stopHandler ();	// might be concurrent
@@ -790,18 +801,6 @@ int32_t	tunedFrequency;
 
 #ifdef	GUI_3
 void	RadioInterface::updateTimeDisplay (void) {
-//QDateTime	currentTime = QDateTime::currentDateTime ();
-//	timeDisplay	-> setText (currentTime.
-//	                            toString (QString ("dd.MM.yy:hh:mm:ss")));
-/*	numberofSeconds ++;
-	int16_t	numberHours	= numberofSeconds / 3600;
-	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	QString text = QString ("runtime ");
-	text. append (QString::number (numberHours));
-	text. append (" hr, ");
-	text. append (QString::number (numberMinutes));
-	text. append (" min");
-    timeDisplay	-> setText (text);*/
 }
 #endif
 
@@ -822,20 +821,6 @@ void	RadioInterface::autoCorrector_on (void) {
 //	the mode during operation
 void	RadioInterface::set_modeSelect (const QString &s) {
 uint8_t	Mode	= s. toInt ();
-
-    /*if (sourceDumping) {
-	   my_ofdmProcessor -> stopDumping ();
-	   sf_close (dumpfilePointer);
-	   sourceDumping = false;
-	   dumpButton	-> setText ("dump");
-	}
-
-	if (audioDumping) {
-	   soundOut	-> stopDumping ();
-	   sf_close (audiofilePointer);
-	   audioDumping	= false;
-	   audioDumpButton -> setText ("audioDump");
-    }*/
 
 	running	= false;
 	soundOut		-> stop ();
@@ -900,27 +885,7 @@ void	RadioInterface::set_bandSelect (QString s) {
 #ifdef GUI_3
 void	RadioInterface::setDevice (QString s) {
 bool	success;
-QString	file;
-//
-///	first stop dumping
-    /*dynamicLabel    -> setText (" ");
-        if (pictureLabel != NULL)
-           delete pictureLabel;
-        pictureLabel    = NULL;
 
-	if (sourceDumping) {
-	   my_ofdmProcessor -> stopDumping ();
-	   sf_close (dumpfilePointer);
-	   sourceDumping = false;
-	   dumpButton	-> setText ("dump");
-	}
-
-	if (audioDumping) {
-	   soundOut	-> stopDumping ();
-	   sf_close (audiofilePointer);
-	   audioDumping	= false;
-	   audioDumpButton -> setText ("audioDump");
-    }*/
 ///	indicate that we are not running anymore
 	running	= false;
 	soundOut	-> stop ();
@@ -1024,36 +989,7 @@ QString	file;
 	}
 	else
 #endif
-//
-//	We always have fileinput!!
-    /*if (s == "file input (.raw)") {
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
-	                                                QDir::homePath (),
-	                                                tr ("raw data (*.raw)"));
-	   file		= QDir::toNativeSeparators (file);
-	   inputDevice	= new rawFiles (file, &success);
-	   if (!success) {
-	      delete inputDevice;
-	      inputDevice = new virtualInput ();
-	      resetSelector ();
-	   }
-	}
-	else
-	if (s == "file input (.sdr)") {
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
-	                                                QDir::homePath (),
-	                                                tr ("raw data (*.sdr)"));
-	   file		= QDir::toNativeSeparators (file);
-	   inputDevice	= new wavFiles (file, &success);
-	   if (!success) {
-	      delete inputDevice;
-	      inputDevice = new virtualInput ();
-	      resetSelector ();
-	   }
-    }
-    else*/ {	// s == "no device"
+    {	// s == "no device"
 //	and as default option, we have a "no device"
 	   inputDevice	= new virtualInput ();
 	}
@@ -1138,6 +1074,37 @@ void	RadioInterface::set_dumping (void) {
 void	RadioInterface::set_audioDump (void) {
 }
 
+void    RadioInterface::CheckFICTimerTimeout (void)
+{
+    if(isFICCRC)
+    {
+        // Tune to station
+        switch (my_ficHandler -> kindofService (CurrentStation))
+        {
+               case AUDIO_SERVICE:
+                  {
+                    // Stop timer
+                    CheckFICTimer.stop();
+                    emit currentStation(CurrentStation.simplified());
+
+                    audiodata d;
+                    my_ficHandler	-> dataforAudioService (CurrentStation, &d);
+                    my_mscHandler	-> set_audioChannel (&d);
+                    showLabel (QString (" "));
+                    emit stationType(get_programm_type_string (d.programType));
+                    emit languageType(get_programm_language_string (d.language));
+                    emit bitrate(d.bitRate);
+                    //LabelServiceLabel -> setText (StationName. simplified ());
+                    if(d.ASCTy == 077)
+                        emit dabType("DAB+");
+                    else
+                        emit dabType("DAB");
+                    break;
+                  }
+            }
+    }
+}
+
 void	RadioInterface::channelClick(QString StationName, QString ChannelName)
 {
     setStart ();
@@ -1147,39 +1114,12 @@ void	RadioInterface::channelClick(QString StationName, QString ChannelName)
        CurrentChannel = ChannelName;
     }
 
-    switch (my_ficHandler -> kindofService (StationName)) {
-       case AUDIO_SERVICE:
-          { audiodata d;
-            my_ficHandler	-> dataforAudioService (StationName, &d);
-            my_mscHandler	-> set_audioChannel (&d);
-            showLabel (QString (" "));
-           /* int16_t	language		= my_mscHandler	-> getLanguage ();
-            int16_t type		= my_mscHandler	-> getType ();
-//	    nameofLanguage	-> setText (get_programm_language_string (language));
-//	    programName	-> setText (ServiceName);
-            LabelServiceLabel -> setText (StationName. simplified ());
-            LabelLanguage -> setText (get_programm_language_string (language));
-//	    programType	-> setText (get_programm_type_string (type));
-            LabelProgrType->setText(get_programm_type_string (type));
-            if(d.ASCTy == 077)
-                LabelCodec->setText("DAB+");
-            else
-                LabelCodec->setText("DAB");
-            channelData (d. subchId,
-                         d. uepFlag,
-                         d. startAddr,
-                         d. length,
-                         d. protLevel,
-                         d. bitRate,
-                         d. ASCTy);*/
-            break;
-          }
-    }
+    CurrentStation = StationName;
 
-    //isPlay = false;
-    //desiredService = ServiceName;
+    // Start the checking of the FIC CRC. If the FIC CRC is ok we can tune to the channel
+    CheckFICTimer.start(1000);
 
-    emit testSignal(StationName.simplified());
+    emit currentStation("Tuning ...");
 }
 
 #endif

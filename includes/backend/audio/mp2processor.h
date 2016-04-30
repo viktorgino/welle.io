@@ -90,7 +90,8 @@ private:
 	int16_t		errorFrames;
 signals:
 	void		show_successRate	(int);
-	void		newAudio		(int);
+    void		newAudio            (int);
+    void		isStereo			(bool);
 };
 #endif
 

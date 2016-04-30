@@ -112,8 +112,10 @@ int32_t		opt;
 	MyRadioInterface = new RadioInterface (ISettings);
 	MyRadioInterface -> show ();
 #endif
-#ifdef GUI_3
-    QQmlApplicationEngine engine(QUrl("qrc:/QML/main.qml"));
+#ifdef GUI_3 
+    QQmlApplicationEngine engine;
+
+    //QQmlApplicationEngine engine(QUrl("qrc:/QML/main.qml"));
     MyRadioInterface = new RadioInterface (ISettings, &engine);
 #endif
 	a. exec ();

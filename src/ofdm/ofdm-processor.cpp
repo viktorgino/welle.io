@@ -290,7 +290,7 @@ checkSignal:
                    "OFDM spectrum correlation coefficient = %f\n",
                     ODFMSpectrum);
               isReset = false;
-              //setSignalPresent (true);
+              emit setSignalPresent (true);
        }
 
 ///	when really out of sync we will be here
@@ -516,7 +516,7 @@ void	ofdmProcessor:: reset	(void) {
 	fineCorrector = coarseCorrector = 0;
 	f2Correction	= true;
     isReset = true;
-    setSignalPresent(false);
+    emit setSignalPresent(false);
 }
 
 void	ofdmProcessor::stop	(void) {

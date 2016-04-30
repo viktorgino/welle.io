@@ -87,7 +87,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/various/Xtan2.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
-	   ./src/input/wavfiles/wavfiles.h 
+           ./src/input/wavfiles/wavfiles.h
 
 FORMS += ./src/input/filereader-widget.ui 
 
@@ -126,7 +126,7 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
-	   ./src/input/wavfiles/wavfiles.cpp 
+           ./src/input/wavfiles/wavfiles.cpp
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -215,9 +215,11 @@ gui_3	{
         INCLUDEPATH	+= ./gui_3
         DEPENDPATH	+= ./gui_3
         HEADERS		+= ./gui_3/gui.h \
-                           ./gui_3/stationelement.h
+                           ./gui_3/stationelement.h \
+                           ./gui_3/motimageprovider.h
         SOURCES		+= ./gui_3/gui.cpp \
-                           ./gui_3/stationelement.cpp
+                           ./gui_3/stationelement.cpp \
+                           ./gui_3/motimageprovider.cpp
 
         RESOURCES += \
             gui_3/touch_gui_resource.qrc

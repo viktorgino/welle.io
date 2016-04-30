@@ -183,12 +183,25 @@ ApplicationWindow {
                 width: 320
                 height: 280
                 //color: "lightgreen"
-                Text {
+                /*Text {
                     text: "MOT slideshow"
                     //text: parent.parent.parent.parent.width
                     anchors.centerIn: parent
+                }*/
+                Image {
+                    id: motImage
+                    source: "image://motslideshow"
+                   // asynchronous: true
                 }
             }
+        }
+    }
+
+    Connections{
+        target: cppGUI
+        onMotChanged:{
+            // Ugly hack to reload the image
+            motImage.source = "image://motslideshow/image_" + Math.random()
         }
     }
 }

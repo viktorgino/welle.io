@@ -77,6 +77,8 @@ uint16_t	genpoly		= 0x1021;
 	         mr, SLOT (show_successRate (int)));
 	connect (this, SIGNAL (showLabel (QString)),
 	         mr, SLOT (showLabel (QString)));
+    connect (this, SIGNAL (isStereo (bool)),
+             mr, SLOT (setStereo (bool)));
 	this	-> bitRate	= bitRate;	// input rate
 
 	superFramesize		= 110 * (bitRate / 8);
@@ -279,6 +281,11 @@ int32_t		tmp;
 ///	but first the crc check
 	   if (dabPlus_crc (&outVector [au_start [i]],
 	                    aac_frame_length)) {
+          if(aacChannelMode)
+             emit isStereo (true); // Stereo
+          else
+             emit isStereo (false); // Mono
+
 	      memcpy (theAU,
 	              &outVector [au_start [i]],
 	              aac_frame_length * sizeof (uint8_t));
