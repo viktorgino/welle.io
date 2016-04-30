@@ -4,6 +4,8 @@ add_definitions ( -Wall)
 #	modify if you want
 set (CMAKE_INSTALL_PREFIX ../)
 
+#set (CMAKE_PREFIX_PATH "/home/albrecht/Qt/5.5/gcc_64/lib/cmake")
+
 if(MINGW)
     add_definitions ( -municode)
 endif()
@@ -28,7 +30,8 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	set(NO_SSE_SUPPORT true)
 
 #	select the GUI you want
-	set(GUI_1 true)
+	set(GUI_1 false)
+	set(GUI_3 true)
 
 #	if you want support for any of these devices, uncomment the line
 #	set(SDRPLAY true)
@@ -54,6 +57,10 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
 	find_package (Qt5Declarative REQUIRED)
+if (GUI_3)
+	find_package (Qt5Qml REQUIRED)
+	find_package (Qt5Quick REQUIRED)
+endif (GUI_3)
 
 	include_directories (
 	      ${Qt5Network_INCLUDE_DIRS}
@@ -239,6 +246,37 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	
 	   add_definitions (-DGUI_1)
 	endif (GUI_1)
+
+	if (GUI_3)
+	   include_directories (./gui_3
+				${Qt5Qml_INCLUDE_DIRS}
+				${Qt5Quick_INCLUDE_DIRS})
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+		./gui_3/gui.h
+		./gui_3/stationelement.h)
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+		./gui_3/gui.h
+		./gui_3/stationelement.h
+		./gui_3/motimageprovider.h)
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+		./gui_3/gui.cpp
+		./gui_3/stationelement.cpp
+		./gui_3/motimageprovider.cpp)
+
+	   set (GUI_3_lib Qt5::Qml
+			Qt5::Quick)
+
+	   #set (QRC ./gui_3/touch_gui_resource.qrc)
+	   qt5_add_resources(UI_RESOURCES ./gui_3/touch_gui_resource.qrc)
+	
+	   add_definitions (-DGUI_3)
+	endif (GUI_3)
 
 	if (SDRPLAY)
 	   set (${objectName}_UIS
@@ -452,11 +490,13 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	                ${RSCS}
 	                ${TRS}
 	                ${MOCS}
+			${UI_RESOURCES}
 	)
 
 	target_link_libraries (${objectName}
 	                       Qt5::Widgets
 	                       Qt5::Network
+	                       ${GUI_3_lib}
 	                       ${RTLTCP_lib}
 	                       ${FFTW3F_LIBRARIES}
 	                       ${extraLibs}
