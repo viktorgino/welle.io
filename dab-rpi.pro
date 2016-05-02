@@ -156,16 +156,9 @@ win32 {
 DESTDIR	= ../../windows-bin-dab
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
-INCLUDEPATH += ../libsndfile/include
-INCLUDEPATH += ../fftw
-INCLUDEPATH += ../portaudio/include
-INCLUDEPATH += ../rtl-sdr
+INCLUDEPATH += ../dab-rpi_win_libs/include
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-LIBS		+= -L../fftw
-LIBS		+= -L../portaudio/lib/Win32/Release
-LIBS		+= -L../libsndfile/lib
-LIBS		+= -L../libfaad
-LIBS		+= -L../libusb-1.0/MinGW32/dll
+LIBS		+= -L../dab-rpi_win_libs/x86
 LIBS		+= -lfftw3f-3
 LIBS		+= -lportaudio_x86
 LIBS		+= -llibsndfile-1
@@ -175,7 +168,7 @@ LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
 LIBS		+= -lws2_32
 LIBS		+= -llibfaad
-LIBS		+= -lusb-1.0.dll
+LIBS		+= -lusb-1.0
 DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 CONFIG		+= NO_SSE_SUPPORT 
