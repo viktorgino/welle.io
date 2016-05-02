@@ -156,22 +156,31 @@ win32 {
 DESTDIR	= ../../windows-bin-dab
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
+INCLUDEPATH += ../libsndfile/include
+INCLUDEPATH += ../fftw
+INCLUDEPATH += ../portaudio/include
+INCLUDEPATH += ../rtl-sdr
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-LIBS		+= -lfftw3f
-LIBS		+= -lportaudio
-LIBS		+= -lsndfile
+LIBS		+= -L../fftw
+LIBS		+= -L../portaudio/lib/Win32/Release
+LIBS		+= -L../libsndfile/lib
+LIBS		+= -L../libfaad
+LIBS		+= -L../libusb-1.0/MinGW32/dll
+LIBS		+= -lfftw3f-3
+LIBS		+= -lportaudio_x86
+LIBS		+= -llibsndfile-1
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
 LIBS		+= -lws2_32
-LIBS		+= -lfaad
-LIBS		+= -lusb-1.0
+LIBS		+= -llibfaad
+LIBS		+= -lusb-1.0.dll
 DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 CONFIG		+= NO_SSE_SUPPORT 
-CONFIG		+= extio
-CONFIG		+= airspy
+#CONFIG		+= extio
+#CONFIG		+= airspy
 #CONFIG		+= airspy-exp
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick_osmo
@@ -179,7 +188,7 @@ CONFIG		+= dabstick_osmo
 #CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer
 #CONFIG		+= rtp-streamer
-CONFIG		+= gui_1
+CONFIG		+= gui_3
 }
 
 NO_SSE_SUPPORT {
