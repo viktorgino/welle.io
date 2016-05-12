@@ -165,10 +165,10 @@ int16_t	latency;
 
     // Add image provider for the MOT slide show
     MOTImage = new MOTImageProvider;
-    engine->addImageProvider(QLatin1String("motslideshow"), MOTImage);
+    //engine->addImageProvider(QLatin1String("motslideshow"), MOTImage);
 
     // Load QML file
-    engine->load(QUrl("qrc:/QML/main.qml"));
+    //engine->load(QUrl("qrc:/QML/main.qml"));
 
     // Set the stations
     QQmlContext *rootContext = engine->rootContext();
@@ -452,8 +452,8 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-    //setDevice 		("dabstick");
-    setDevice 		("rtl_tcp");
+    setDevice 		("dabstick");
+    //setDevice 		("rtl_tcp");
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here

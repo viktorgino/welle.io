@@ -14,9 +14,10 @@ QMAKE_LFLAGS	+=  -flto -g
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#CONFIG		+= NO_SSE_SUPPORT
+CONFIG		+= NO_SSE_SUPPORT 
 #DEFINES	+= SIMPLE_SYNCHRONIZATION
 DEFINES	+= FULL_CORRELATION
+DEFINES	+= __BETTER_LOCK
 DEPENDPATH += . \
 	      ./src \
 	      ./includes \
@@ -62,7 +63,8 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
 	   ./includes/backend/fib-processor.h  \
-           ./includes/backend/rs-decoder.h \
+	   ./includes/backend/galois.h \
+	   ./includes/backend/reed-solomon.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/dab-processor.h \
@@ -87,7 +89,7 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/various/Xtan2.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
-           ./src/input/wavfiles/wavfiles.h
+	   ./src/input/wavfiles/wavfiles.h 
 
 FORMS += ./src/input/filereader-widget.ui 
 
@@ -103,7 +105,8 @@ SOURCES += ./main.cpp \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/deconvolve.cpp \
 	   ./src/backend/fib-processor.cpp  \
-           ./src/backend/rs-decoder.cpp \
+	   ./src/backend/galois.cpp \
+	   ./src/backend/reed-solomon.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/dab-virtual.cpp \
@@ -126,7 +129,7 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
-           ./src/input/wavfiles/wavfiles.cpp
+	   ./src/input/wavfiles/wavfiles.cpp 
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -156,22 +159,24 @@ win32 {
 DESTDIR	= ../../windows-bin-dab
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
+INCLUDEPATH += ../dab-rpi_win_libs/include
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-LIBS		+= -lfftw3f
-LIBS		+= -lportaudio
-LIBS		+= -lsndfile
+LIBS		+= -L../dab-rpi_win_libs/x86
+LIBS		+= -lfftw3f-3
+LIBS		+= -lportaudio_x86
+LIBS		+= -llibsndfile-1
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
 LIBS		+= -lws2_32
-LIBS		+= -lfaad
+LIBS		+= -llibfaad
 LIBS		+= -lusb-1.0
 DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 CONFIG		+= NO_SSE_SUPPORT 
-CONFIG		+= extio
-CONFIG		+= airspy
+#CONFIG		+= extio
+#CONFIG		+= airspy
 #CONFIG		+= airspy-exp
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick_osmo
@@ -179,7 +184,7 @@ CONFIG		+= dabstick_osmo
 #CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer
 #CONFIG		+= rtp-streamer
-CONFIG		+= gui_1
+CONFIG		+= gui_3
 }
 
 NO_SSE_SUPPORT {
@@ -272,9 +277,9 @@ sdrplay {
 airspy {
 	DEFINES		+= HAVE_AIRSPY
 	INCLUDEPATH	+= ./src/input/airspy \
-	                   /usr/local/include/libairspy
+	                    /usr/local/include/libairspy
 	HEADERS		+= ./src/input/airspy/airspy-handler.h \
-	                   /usr/local/include/libairspy/airspy.h
+	                    /usr/local/include/libairspy/airspy.h
 	SOURCES		+= ./src/input/airspy/airspy-handler.cpp 
 	FORMS		+= ./src/input/airspy/airspy-widget.ui
 }

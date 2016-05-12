@@ -40,11 +40,25 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 #	set(DABSTICK_NEW true)
 	set(RTLTCP true)
 
-
+#	initial coarse frequency synchronization is always a mess
+#	SIMPLE_SYNCHRONIZATION just looks at the balance between the
+#	energy in the positive and the negative frequencies in block_0
+#	FULL_CORRELATION computes a correlation over a number of
+#	phasedifferences in subsequent frequencies in block_0
+#	with the predefined set
+#	default is just a manual approach, looking at a minimum
+#	of phasedifferences in subsequent "bin"'s that are supposed to be
+#	zero.
 #	add_definitions (-DSIMPLE_SYNCHRONIZATION)
-	add_definitions (-DFULL_CORRELATION)
+#	add_definitions (-DFULL_CORRELATION)
 	add_definitions (-DMOT_BASICS__) 	# use at your own risk
 	add_definitions (-DMSC_DATA__)		# use at your own risk
+#	The optimistic assumption is that the buffer - between the
+#	ofdmProcessor and the ofdmDecoder - is never overwritten.
+#	On the raspberry, with its 4 cores, this is indeed unlikely to
+#	happen. Uncommenting the following line adds an extra lock
+#	to prevent overwriting
+#	add_definitions	(-DBETTER_LOCK)
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -144,7 +158,8 @@ endif (GUI_3)
 	     ./includes/backend/dab-processor.h
 	     ./includes/backend/dab-virtual.h
 	     ./includes/backend/charsets.h
-	     ./includes/backend/rs-decoder.h
+	     ./includes/backend/galois.h
+	     ./incluces/backend/reed-solomon.h
 	     ./includes/backend/audio/dab-audio.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp4processor.h 
@@ -187,7 +202,8 @@ endif (GUI_3)
 	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
 	     ./src/backend/dab-virtual.cpp 
-	     ./src/backend/rs-decoder.cpp
+	     ./src/backend/galois.cpp
+	     ./src/backend/reed-solomon.cpp
 	     ./src/backend/audio/dab-audio.cpp
 	     ./src/backend/audio/mp4processor.cpp 
 	     ./src/backend/audio/mp2processor.cpp 
