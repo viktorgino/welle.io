@@ -43,10 +43,11 @@ import QtQuick 2.2
 Item {
     id: root
     width: parent.width
-    height: 44
+    height: u.dp(44)
 
     property alias stationNameText: stationItem.text
     property alias channelNameText: channelItem.text
+
     signal clicked
 
     Rectangle {
@@ -58,27 +59,28 @@ Item {
     Text {
         id: stationItem
         color: "white"
-        font.pixelSize: 16
+        font.pixelSize: u.em(1.3)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: 15
+        anchors.leftMargin: u.dp(15)
     }
 
     Text {
         id: channelItem
         color: "white"
-        font.pixelSize: 10
+        font.pixelSize: u.em(0.9)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: 15
+        anchors.rightMargin: u.dp(15)
+        opacity: root.ListView.view.showChannelState ? 1 : 0
     }
 
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: 7
+        anchors.margins: u.dp(7)
         height: 1
         color: "#424246"
     }

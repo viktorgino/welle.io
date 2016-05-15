@@ -40,15 +40,26 @@
 
 import QtQuick 2.2
 import QtQuick.Controls 1.2
-import QtQuick.Layouts 1.1
+import QtQuick.Layouts 1.2
 
 ApplicationWindow {
+    Units {
+         id: u
+     }
+
+    Loader {
+        id: settingsPageLoader
+        anchors.topMargin: u.dp(10)
+        readonly property SettingsPage settingsPage: item
+        source: Qt.resolvedUrl("SettingsPage.qml")
+    }
+
     signal qmlSignal(string statio, string channel)
 
     id: mainWindow
     visible: true
-    width: 800
-    height: 480
+    width: u.dp(700)
+    height: u.dp(500)
 
     Rectangle {
         x: 0
@@ -61,89 +72,57 @@ ApplicationWindow {
     }
 
     toolBar: BorderImage {
-        border.bottom: 10
+        border.bottom: u.dp(10)
         source: "images/toolbar.png"
         width: parent.width
-        height: 40
+        height: u.dp(40)
 
         Rectangle {
             id: backButton
-            width: opacity ? 60 : 0
+            width: opacity ? u.dp(60) : 0
             anchors.left: parent.left
-            anchors.leftMargin: 20
-            opacity: stackView.depth > 1 ? 1 : 0
+            anchors.leftMargin: u.dp(20)
+            //opacity: stackView.depth > 1 ? 1 : 0
             anchors.verticalCenter: parent.verticalCenter
             antialiasing: true
-            //height: 20
-            radius: 4
+            radius: u.dp(4)
             color: backmouse.pressed ? "#222" : "transparent"
             Behavior on opacity { NumberAnimation{} }
             Image {
                 anchors.verticalCenter: parent.verticalCenter
-                source: "images/navigation_previous_item.png"
-                height: 30
+                source: stackView.depth > 1 ? "images/navigation_previous_item.png" : "images/icon-settings.png"
+                height: u.dp(20)
                 fillMode: Image.PreserveAspectFit
             }
             MouseArea {
                 id: backmouse
                 scale: 1
                 anchors.fill: parent
-                anchors.margins: -10
-                onClicked: stackView.pop()
+                anchors.margins: u.dp(-20)
+                onClicked: stackView.depth > 1 ? stackView.pop() : stackView.push(settingsPageLoader)
             }
         }
 
         Text {
-            font.pixelSize: 20
+            font.pixelSize: u.em(2)
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            x: backButton.x + backButton.width + 20
+            x: backButton.x + backButton.width + u.dp(20)
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
             text: "dab-rpi"
-        }
-
-        Rectangle {
-            id: seetingsButton
-            width: opacity ? 40 : 0
-            anchors.right: parent.right
-            anchors.rightMargin: 5
-            opacity: stackView.depth > 1 ? 0 : 1
-            anchors.verticalCenter: parent.verticalCenter
-            antialiasing: true
-            //height: 20
-            radius: 4
-            color: backmouse.pressed ? "#222" : "transparent"
-            Behavior on opacity { NumberAnimation{} }
-            Image {
-                anchors.verticalCenter: parent.verticalCenter
-                source: "images/icon-settings.png"
-                height: 20
-                fillMode: Image.PreserveAspectFit
-            }
-            MouseArea {
-                id: backmouse2
-                scale: 1
-                anchors.fill: parent
-                anchors.margins: -10
-                onClicked: stackView.push(Qt.resolvedUrl("SettingsPage.qml"))
-            }
         }
     }
 
     SplitView {
         anchors.fill: parent
-        //orientation: parent.width > 300 ? Qt.Horizontal : Qt.Vertical
         orientation: Qt.Horizontal
 
         StackView {
             id: stackView
-
-            //x: 0
             clip: true
             //anchors.fill: parent
-            width: 200
-            Layout.minimumHeight: 200
-            //Layout.maximumWidth: 400
+            width: u.dp(200)
+            Layout.minimumHeight: u.dp(200)
             Layout.fillWidth: true
             // Implements back key navigation
             focus: true
@@ -156,17 +135,20 @@ ApplicationWindow {
                 width: parent.width
                 height: parent.height
                 ListView {
+                    property bool showChannelState: settingsPageLoader.settingsPage.showChannelState
+                    //property bool showChannelState: false
                     anchors.rightMargin: 0
                     anchors.bottomMargin: 0
                     anchors.leftMargin: 0
                     anchors.topMargin: 0
                     model: stationModel
                     anchors.fill: parent
-                    delegate: AndroidDelegate {
+                    delegate: StationDelegate {
                         stationNameText: stationName
                         channelNameText: channelName
                         onClicked: mainWindow.qmlSignal(stationName, channelName)
                     }
+
                 }
             }
         }
@@ -174,14 +156,14 @@ ApplicationWindow {
         SplitView {
             //anchors.right: parent
             orientation: Qt.Vertical
-            width: 320
-            Layout.maximumWidth: 320
+            width: u.dp(320)
+            Layout.maximumWidth: u.dp(320)
 
             RadioView {}
 
             Rectangle {
-                width: 320
-                height: 280
+                width: u.dp(320)
+                height: u.dp(280)
                 //color: "lightgreen"
                 /*Text {
                     text: "MOT slideshow"

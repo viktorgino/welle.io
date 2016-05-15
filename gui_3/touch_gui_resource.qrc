@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>QML/AndroidDelegate.qml</file>
+        <file>QML/StationDelegate.qml</file>
         <file>QML/main.qml</file>
         <file>QML/RadioView.qml</file>
         <file>QML/SettingsPage.qml</file>
@@ -13,5 +13,6 @@
         <file>QML/images/tabs_standard.png</file>
         <file>QML/images/textinput.png</file>
         <file>QML/images/toolbar.png</file>
+        <file>QML/Units.qml</file>
     </qresource>
 </RCC>

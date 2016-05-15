@@ -1,26 +1,23 @@
-import QtQuick 2.0
+import QtQuick 2.2
 import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Extras 1.4
+import QtQuick.Layouts 1.2
 
 Item {
+    id: settingsPage
 
-    ListModel{
-        id: dataModel
-        ListElement{ name: "Day" }
-        ListElement{ name: "Week" }
-        ListElement{ name: "Month" }
-        ListElement{ name: "Year" }
-    }
+    property alias showChannelState : showChannel.checked
 
-    Column {
-        spacing: 40
-        anchors.centerIn: parent
+    ColumnLayout {
+        spacing: u.dp(40)
+        anchors.top: parent.top
+        anchors.topMargin: u.dp(20)
+        anchors.horizontalCenter: parent.horizontalCenter
 
-        Row {
-            spacing: 20
+        RowLayout {
+            spacing: u.dp(20)
             Text {
-                font.pixelSize: 16
+                font.pixelSize: u.em(1.3)
                 Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                 color: "white"
                 text: "Input"
@@ -33,53 +30,57 @@ Item {
             }
         }
 
-
         Row {
-            spacing: 20
+            spacing: u.dp(20)
             Text {
-                font.pixelSize: 16
+                font.pixelSize: u.em(1.3)
                 Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                 color: "white"
-                text: "AGC"
+                text: "Show channel in station list"
             }
             Switch {
                 style: switchStyle
+                id: showChannel
+                checked: true
             }
-        }
-
-        Slider {
-            anchors.margins: 20
-            style: sliderStyle
-            value: 1.0
-        }
-
-        Button {
-            text: "Channel Scan"
-            style: touchStyle
-        }
-
-        Button {
-            style: touchStyle
-            text: "Press me too"
-        }
-
-        Button {
-            anchors.margins: 20
-            style: touchStyle
-            text: "Don't press me"
-            onClicked: if (stackView) stackView.pop()
         }
 
         Row {
-            spacing: 20
-            Switch {
-                style: switchStyle
+            spacing: u.dp(20)
+            Text {
+                font.pixelSize: u.em(1.3)
+                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                color: "white"
+                text: "Channel scan"
             }
-            Switch {
-                style: switchStyle
+            Button {
+                id: startChannelScanButton
+                text: "Start"
+                style: touchStyle
+                implicitWidth: u.dp(80)
+                onClicked: {
+                    startChannelScanButton.enabled = false
+                    stopChannelScanButton.enabled = true
+                }
+            }
+            Button {
+                id: stopChannelScanButton
+                text: "Stop"
+                style: touchStyle
+                implicitWidth: u.dp(80)
+                enabled: false
+                onClicked: {
+                    startChannelScanButton.enabled = true
+                    stopChannelScanButton.enabled = false
+                }
             }
         }
 
+        /*Slider {
+            anchors.margins: u.dp(20)
+            style: sliderStyle
+            value: 1.0
+        }*/
     }
 
 
@@ -90,22 +91,22 @@ Item {
         id: touchStyle
         ButtonStyle {
             panel: Item {
-                implicitHeight: 25
-                implicitWidth: 160
+                implicitHeight: u.dp(25)
+                implicitWidth: u.dp(160)
                 BorderImage {
                     anchors.fill: parent
                     antialiasing: true
-                    border.bottom: 8
-                    border.top: 8
-                    border.left: 8
-                    border.right: 8
-                    anchors.margins: control.pressed ? -4 : 0
+                    border.bottom: u.dp(8)
+                    border.top: u.dp(8)
+                    border.left: u.dp(8)
+                    border.right: u.dp(8)
+                    anchors.margins: control.pressed ? u.dp(-4) : 0
                     source: control.pressed ? "images/button_pressed.png" : "images/button_default.png"
                     Text {
                         text: control.text
                         anchors.centerIn: parent
-                        color: "white"
-                        font.pixelSize: 16
+                        color: control.enabled ? "white" : "grey"
+                        font.pixelSize: u.em(1.3)
                         renderType: Text.NativeRendering
                     }
                 }
@@ -118,18 +119,17 @@ Item {
         id: sliderStyle
         SliderStyle {
             handle: Rectangle {
-                width: 15
-                height: 15
+                width: u.dp(15)
+                height: u.dp(15)
                 radius: height
                 antialiasing: true
                 color: Qt.lighter("#468bb7", 1.2)
             }
 
             groove: Item {
-                //implicitHeight: 50
-                implicitWidth: 200
+                implicitWidth: u.dp(200)
                 Rectangle {
-                    height: 4
+                    height: u.dp(4)
                     width: parent.width
                     anchors.verticalCenter: parent.verticalCenter
                     color: "#444"
@@ -152,19 +152,19 @@ Item {
         SwitchStyle {
 
             groove: Rectangle {
-                implicitHeight: 25
-                implicitWidth: 70
+                implicitHeight: u.dp(25)
+                implicitWidth: u.dp(70)
                 Rectangle {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
-                    width: parent.width/2 - 2
-                    height: 20
-                    anchors.margins: 2
+                    width: parent.width/2 - u.dp(2)
+                    height: u.dp(20)
+                    anchors.margins: u.dp(2)
                     color: control.checked ? "#468bb7" : "#222"
                     Behavior on color {ColorAnimation {}}
                     Text {
-                        font.pixelSize: 16
+                        font.pixelSize: u.em(1.3)
                         color: "white"
                         anchors.centerIn: parent
                         text: "ON"
@@ -175,7 +175,7 @@ Item {
                     height: parent.height
                     anchors.right: parent.right
                     Text {
-                        font.pixelSize: 16
+                        font.pixelSize: u.em(1.3)
                         color: "white"
                         anchors.centerIn: parent
                         text: "OFF"
@@ -183,14 +183,14 @@ Item {
                 }
                 color: "#222"
                 border.color: "#444"
-                border.width: 2
+                border.width: u.dp(2)
             }
             handle: Rectangle {
                 width: parent.parent.width/2
                 height: control.height
                 color: "#444"
                 border.color: "#555"
-                border.width: 2
+                border.width: u.dp(2)
             }
         }
     }
