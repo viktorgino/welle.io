@@ -43,6 +43,15 @@ import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.2
 
 ApplicationWindow {
+    signal stationClicked(string statio, string channel)
+    signal startChannelScanClicked
+    signal stopChannelScanClicked
+
+    id: mainWindow
+    visible: true
+    width: u.dp(700)
+    height: u.dp(500)
+
     Units {
          id: u
      }
@@ -53,13 +62,6 @@ ApplicationWindow {
         readonly property SettingsPage settingsPage: item
         source: Qt.resolvedUrl("SettingsPage.qml")
     }
-
-    signal qmlSignal(string statio, string channel)
-
-    id: mainWindow
-    visible: true
-    width: u.dp(700)
-    height: u.dp(500)
 
     Rectangle {
         x: 0
@@ -110,6 +112,7 @@ ApplicationWindow {
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
             text: "dab-rpi"
+            //text: u.dp(1)
         }
     }
 
@@ -146,7 +149,7 @@ ApplicationWindow {
                     delegate: StationDelegate {
                         stationNameText: stationName
                         channelNameText: channelName
-                        onClicked: mainWindow.qmlSignal(stationName, channelName)
+                        onClicked: mainWindow.stationClicked(stationName, channelName)
                     }
 
                 }
@@ -184,6 +187,16 @@ ApplicationWindow {
         onMotChanged:{
             // Ugly hack to reload the image
             motImage.source = "image://motslideshow/image_" + Math.random()
+        }
+    }
+
+    Connections{
+        target: settingsPageLoader.item
+        onStartChannelScan:  {
+            mainWindow.startChannelScanClicked()
+        }
+        onStopChannelScan: {
+            mainWindow.stopChannelScanClicked()
         }
     }
 }

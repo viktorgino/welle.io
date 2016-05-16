@@ -96,11 +96,15 @@ const	char		*get_programm_language_string (uint8_t);
     int16_t		ficSuccess;
 #ifdef	GUI_3
     QTimer      CheckFICTimer;
+    QTimer      ScanChannelTimer;
     MOTImageProvider *MOTImage;
 
     QString     CurrentChannel;
     QString     CurrentStation;
     bool        isFICCRC;
+
+    int         BandIIIChannelIt;
+    int         BandLChannelIt;
 #endif
 
 public slots:
@@ -142,9 +146,11 @@ private slots:
     void	set_dumping		(void);
     void	set_audioDump		(void);
     void    CheckFICTimerTimeout    (void);
-#endif
     void    channelClick(QString, QString);
-
+    void    startChannelScanClick(void);
+    void    stopChannelScanClick(void);
+    void    scanChannelTimerTimeout(void);
+#endif
 signals:
     void currentStation(QString text);
     void signalFlag(bool active);
@@ -157,6 +163,8 @@ signals:
     void languageType(QString text);
     void signalPower(int power);
     void motChanged(void);
+    void channelScanStopped(void);
+    void channelScanProgress(int progress);
 };
 
 #endif

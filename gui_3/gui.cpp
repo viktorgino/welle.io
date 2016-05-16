@@ -159,6 +159,7 @@ int16_t	latency;
 
     // Set timer
     connect(&CheckFICTimer, SIGNAL(timeout()),this, SLOT(CheckFICTimerTimeout()));
+    connect(&ScanChannelTimer, SIGNAL(timeout()),this, SLOT(scanChannelTimerTimeout()));
 
     // Reset
     isFICCRC = false;
@@ -179,7 +180,9 @@ int16_t	latency;
     QObject *rootObject = engine->rootObjects().first();
 
     // Connect signals
-    connect(rootObject, SIGNAL(qmlSignal(QString,QString)),this, SLOT(channelClick(QString,QString)));
+    connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
+    connect(rootObject, SIGNAL(startChannelScanClicked()),this, SLOT(startChannelScanClick()));
+    connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
 
     // Add image provider for the MOT slide show
     engine->addImageProvider(QLatin1String("motslideshow"), new MOTImageProvider);
@@ -1121,5 +1124,51 @@ void	RadioInterface::channelClick(QString StationName, QString ChannelName)
 
     emit currentStation("Tuning ...");
 }
+
+void	RadioInterface::startChannelScanClick(void)
+{
+    BandIIIChannelIt = 0;
+    BandLChannelIt = 0;
+
+    // Start channel scan
+    ScanChannelTimer.start(1000);
+}
+
+void	RadioInterface::stopChannelScanClick(void)
+{
+    // Stop channel scan
+    ScanChannelTimer.stop();
+}
+
+void	RadioInterface::scanChannelTimerTimeout(void)
+{
+    // Open and start the radio
+    //setStart ();
+
+    // Select channel
+    if(BandIIIChannelIt < 38) // 38 band III frequencies
+    {
+        CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
+        dabBand	= BAND_III;
+        fprintf(stderr,"%s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
+        BandIIIChannelIt ++;
+        emit channelScanProgress(BandIIIChannelIt);
+    }
+    else if(BandLChannelIt < 16) // 16 L band frequencies
+    {
+        CurrentChannel = Lband_frequencies [BandLChannelIt]. key;
+        dabBand	= L_BAND;
+        fprintf(stderr,"%s, %d kHz\n", Lband_frequencies [BandLChannelIt]. key, Lband_frequencies [BandLChannelIt].fKHz);
+        BandLChannelIt++;
+        emit channelScanProgress(BandIIIChannelIt + BandLChannelIt);
+    }
+    else
+    {
+        fprintf(stderr,"Stop channel scan\n");
+        ScanChannelTimer.stop();
+        emit channelScanStopped();
+    }
+}
+
 
 #endif

@@ -85,19 +85,9 @@ Item {
         color: "#424246"
     }
 
-   /* Image {
-        fillMode: Image.PreserveAspectFit
-        height: 30
-        anchors.right: parent.right
-        anchors.rightMargin: 10
-        anchors.verticalCenter: parent.verticalCenter
-        source: "../images/navigation_next_item.png"
-    }*/
-
     MouseArea {
         id: mouse
         anchors.fill: parent
         onClicked: root.clicked()
-
     }
 }

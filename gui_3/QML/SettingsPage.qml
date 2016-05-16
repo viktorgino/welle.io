@@ -7,6 +7,20 @@ Item {
     id: settingsPage
 
     property alias showChannelState : showChannel.checked
+    signal startChannelScan
+    signal stopChannelScan
+
+    Connections{
+        target: cppGUI
+        onChannelScanStopped:{
+            startChannelScanButton.enabled = true
+            stopChannelScanButton.enabled = false
+        }
+
+        onChannelScanProgress:{
+            channelScanProgressBar.value = progress
+        }
+    }
 
     ColumnLayout {
         spacing: u.dp(40)
@@ -61,6 +75,7 @@ Item {
                 onClicked: {
                     startChannelScanButton.enabled = false
                     stopChannelScanButton.enabled = true
+                    settingsPage.startChannelScan()
                 }
             }
             Button {
@@ -72,8 +87,17 @@ Item {
                 onClicked: {
                     startChannelScanButton.enabled = true
                     stopChannelScanButton.enabled = false
+                    settingsPage.stopChannelScan()
                 }
             }
+        }
+
+        ProgressBar{
+            id: channelScanProgressBar
+            style: progressBarStyle
+            minimumValue: 0
+            maximumValue: 54
+            implicitWidth: u.dp(305)
         }
 
         /*Slider {
@@ -191,6 +215,26 @@ Item {
                 color: "#444"
                 border.color: "#555"
                 border.width: u.dp(2)
+            }
+        }
+    }
+
+    /* ProgressBar Style */
+    Component {
+        id: progressBarStyle
+        ProgressBarStyle {
+            panel: Rectangle {
+                implicitHeight: u.dp(15)
+                implicitWidth: u.dp(400)
+                color: "#444"
+                opacity: 0.8
+                Rectangle {
+                    antialiasing: true
+                    radius: u.dp(1)
+                    color: "#468bb7"
+                    height: parent.height
+                    width: parent.width * control.value / control.maximumValue
+                }
             }
         }
     }
