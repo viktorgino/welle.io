@@ -162,7 +162,9 @@ int16_t	latency;
     connect(&ScanChannelTimer, SIGNAL(timeout()),this, SLOT(scanChannelTimerTimeout()));
 
     // Reset
+    isSignalPresent = false;
     isFICCRC = false;
+    StationList.clear();
 
     // Add image provider for the MOT slide show
     MOTImage = new MOTImageProvider;
@@ -455,8 +457,8 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-    setDevice 		("dabstick");
-    //setDevice 		("rtl_tcp");
+    //setDevice 		("dabstick");
+    setDevice 		("rtl_tcp");
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here
@@ -513,10 +515,11 @@ void	RadioInterface::clearEnsemble	(void) {
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &s) {
 #ifdef	GUI_3
-/*	Services << s;
-	Services. removeDuplicates ();
-	ensemble. setStringList (Services);
-    ensembleDisplay	-> setModel (&ensemble);*/
+    fprintf(stderr,"Found station %s\n", s.toStdString().c_str());
+
+    // Add new station into list
+    if(!s.contains("data"))
+        StationList.append(s);
 #endif
 }
 
@@ -668,19 +671,9 @@ void    RadioInterface::setStereo (bool isStereo) {
 
 void    RadioInterface::setSignalPresent (bool isSignal) {
 #ifdef	GUI_3
-    //isSignalPresent = isSignal;
+    isSignalPresent = isSignal;
 
     emit signalFlag(isSignal);
-
-    /*if(isSignal)
-    {
-        CLED_SIGNAL->SetLight(CMultColorLED::RL_GREEN);
-        //LabelServiceLabel->setText("Syncing ...");
-    }
-    else
-    {
-        CLED_SIGNAL->SetLight(CMultColorLED::RL_RED);
-    }*/
 #endif
 }
 
@@ -1130,6 +1123,9 @@ void	RadioInterface::startChannelScanClick(void)
     BandIIIChannelIt = 0;
     BandLChannelIt = 0;
 
+    // Set first state
+    ScanChannelState = ScanStart;
+
     // Start channel scan
     ScanChannelTimer.start(1000);
 }
@@ -1140,33 +1136,139 @@ void	RadioInterface::stopChannelScanClick(void)
     ScanChannelTimer.stop();
 }
 
+
+
 void	RadioInterface::scanChannelTimerTimeout(void)
 {
-    // Open and start the radio
-    //setStart ();
+    static int Timeout = 0;
 
-    // Select channel
-    if(BandIIIChannelIt < 38) // 38 band III frequencies
+    // **** The channel scan is done by a simple state machine ***
+
+    // State ScanStart
+    if(ScanChannelState == ScanStart)
     {
-        CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
-        dabBand	= BAND_III;
-        fprintf(stderr,"%s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
-        BandIIIChannelIt ++;
-        emit channelScanProgress(BandIIIChannelIt);
+        //fprintf(stderr,"State: ScanStart\n");
+
+        // Open and start the radio
+        setStart ();
+
+        // Reset the station list
+        StationList.clear();
+
+        ScanChannelState = ScanTunetoChannel;
     }
-    else if(BandLChannelIt < 16) // 16 L band frequencies
+
+    // State ScanTunetoChannel
+    if(ScanChannelState == ScanTunetoChannel)
     {
-        CurrentChannel = Lband_frequencies [BandLChannelIt]. key;
-        dabBand	= L_BAND;
-        fprintf(stderr,"%s, %d kHz\n", Lband_frequencies [BandLChannelIt]. key, Lband_frequencies [BandLChannelIt].fKHz);
-        BandLChannelIt++;
-        emit channelScanProgress(BandIIIChannelIt + BandLChannelIt);
+        //fprintf(stderr,"State: ScanTunetoChannel\n");
+
+        // Select channel
+        if(BandIIIChannelIt < 38) // 38 band III frequencies
+        {
+            CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
+            dabBand	= BAND_III;
+            fprintf(stderr,"Scan channel: %s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
+            BandIIIChannelIt ++;
+            emit channelScanProgress(BandIIIChannelIt);
+
+            // Tune to channel
+            set_channelSelect (CurrentChannel);
+
+            Timeout = 0;
+            ScanChannelState = ScanCheckSignal;
+        }
+        /*else if(BandLChannelIt < 16) // 16 L band frequencies
+        {
+            CurrentChannel = Lband_frequencies [BandLChannelIt]. key;
+            dabBand	= L_BAND;
+            fprintf(stderr,"Scan channel: %s, %d kHz\n", Lband_frequencies [BandLChannelIt]. key, Lband_frequencies [BandLChannelIt].fKHz);
+            BandLChannelIt++;
+            emit channelScanProgress(BandIIIChannelIt + BandLChannelIt);
+
+            // Tune to channel
+            set_channelSelect (CurrentChannel);
+
+            Timeout = 0;
+            ScanChannelState = ScanCheckSignal;
+        }*/
+        else
+        {
+            ScanChannelState = ScanDone;
+        }
     }
-    else
+
+    // State ScanCheckSignal
+    if(ScanChannelState == ScanCheckSignal)
     {
-        fprintf(stderr,"Stop channel scan\n");
+        //fprintf(stderr,"State: ScanCheckSignal\n");
+
+        if(isSignalPresent)
+        {
+            Timeout = 0;
+            ScanChannelState = ScanWaitForFIC;
+        }
+        else
+        {
+            Timeout++;
+        }
+
+        // 2 s timeout
+        if(Timeout >= 2)
+        {
+            //fprintf(stderr,"ScanCheckSignal Timeout\n");
+            ScanChannelState = ScanTunetoChannel;
+        }
+    }
+
+    // State ScanWaitForFIC
+    if(ScanChannelState == ScanWaitForFIC)
+    {
+        //fprintf(stderr,"State: ScanWaitForFIC\n");
+
+        if(isFICCRC)
+        {
+            fprintf(stderr,"Found channel %s\n", CurrentChannel.toStdString().c_str());
+
+            Timeout = 0;
+            ScanChannelState = ScanWaitForChannelNames;
+        }
+        else
+        {
+            Timeout++;
+        }
+
+        // 10 s timeout
+        if(Timeout >= 10)
+        {
+            //fprintf(stderr,"ScanWaitForFIC Timeout\n");
+            ScanChannelState = ScanTunetoChannel;
+        }
+    }
+
+    // State ScanWaitForChannelNames
+    if(ScanChannelState == ScanWaitForChannelNames)
+    {
+        Timeout++;
+
+        // 20 s timeout
+        if(Timeout >= 20)
+            ScanChannelState = ScanTunetoChannel;
+    }
+
+    // State ScanDone
+    if(ScanChannelState == ScanDone)
+    {
+        //fprintf(stderr,"Stop channel scan\n");
         ScanChannelTimer.stop();
         emit channelScanStopped();
+
+        StationList.sort();
+        for(int i=0;i<StationList.count();i++)
+        {
+            QString Station = StationList.at(i);
+            fprintf(stderr,"Station: %s\n",Station.toStdString().c_str());
+        }
     }
 }
 

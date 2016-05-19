@@ -51,6 +51,15 @@ class	ficHandler;
 
 class	common_fft;
 
+typedef enum
+{
+    ScanStart,
+    ScanTunetoChannel,
+    ScanCheckSignal,
+    ScanWaitForFIC,
+    ScanWaitForChannelNames,
+    ScanDone
+} tScanChannelState;
 
 /*
  *	GThe main gui object. It inherits from
@@ -102,9 +111,12 @@ const	char		*get_programm_language_string (uint8_t);
     QString     CurrentChannel;
     QString     CurrentStation;
     bool        isFICCRC;
+    bool        isSignalPresent;
 
     int         BandIIIChannelIt;
     int         BandLChannelIt;
+    tScanChannelState ScanChannelState;
+    QStringList StationList;
 #endif
 
 public slots:
