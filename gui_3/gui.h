@@ -36,7 +36,7 @@
 #include	<QTimer>
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
-#include    "stationelement.h"
+#include    "stationlist.h"
 #include    "motimageprovider.h"
 #endif
 #include	"ofdm-processor.h"
@@ -116,7 +116,8 @@ const	char		*get_programm_language_string (uint8_t);
     int         BandIIIChannelIt;
     int         BandLChannelIt;
     tScanChannelState ScanChannelState;
-    QStringList StationList;
+    //QStringList StationList;
+    StationList stationList;
 #endif
 
 public slots:

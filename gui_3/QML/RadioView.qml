@@ -108,7 +108,7 @@ Item{
     Text {
         id: currentStation
         anchors.centerIn: parent
-        text: "WDR"
+        text: "No Station"
         color: "white"
         font.pixelSize: u.em(2.5)
     }

@@ -143,9 +143,6 @@ int16_t	latency;
     if (autoStart)
        setStart ();
 
-    // List for the stations model
-    QList<QObject*> dataList;
-
     // Read channels from the settings
     dabSettings->beginGroup("channels");
     int channelcount = dabSettings->value("channelcout").toInt();
@@ -153,9 +150,12 @@ int16_t	latency;
     for(int i=1;i<=channelcount;i++)
     {
         QStringList SaveChannel = dabSettings->value("channel/"+QString::number(i)).toStringList();
-        dataList.append(new StationElement(SaveChannel.last(), SaveChannel.first()));
+        stationList.append(SaveChannel.last(), SaveChannel.first());
     }
     dabSettings->endGroup();
+
+    // Sort stations
+    stationList.sort();
 
     // Set timer
     connect(&CheckFICTimer, SIGNAL(timeout()),this, SLOT(CheckFICTimerTimeout()));
@@ -164,7 +164,6 @@ int16_t	latency;
     // Reset
     isSignalPresent = false;
     isFICCRC = false;
-    StationList.clear();
 
     // Add image provider for the MOT slide show
     MOTImage = new MOTImageProvider;
@@ -175,7 +174,7 @@ int16_t	latency;
 
     // Set the stations
     QQmlContext *rootContext = engine->rootContext();
-    rootContext->setContextProperty("stationModel", QVariant::fromValue(dataList));
+    rootContext->setContextProperty("stationModel", QVariant::fromValue(stationList.getList()));
     rootContext->setContextProperty("cppGUI", this);
 
     // Take the root object
@@ -519,7 +518,7 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 
     // Add new station into list
     if(!s.contains("data"))
-        StationList.append(s);
+        stationList.append(s, CurrentChannel);
 #endif
 }
 
@@ -1133,7 +1132,8 @@ void	RadioInterface::startChannelScanClick(void)
 void	RadioInterface::stopChannelScanClick(void)
 {
     // Stop channel scan
-    ScanChannelTimer.stop();
+    //ScanChannelTimer.stop();
+    ScanChannelState = ScanDone;
 }
 
 
@@ -1153,7 +1153,8 @@ void	RadioInterface::scanChannelTimerTimeout(void)
         setStart ();
 
         // Reset the station list
-        StationList.clear();
+        //StationList.clear();
+        stationList.reset();
 
         ScanChannelState = ScanTunetoChannel;
     }
@@ -1196,6 +1197,8 @@ void	RadioInterface::scanChannelTimerTimeout(void)
         {
             ScanChannelState = ScanDone;
         }
+
+        emit currentStation("Scanning " + CurrentChannel + " ...");
     }
 
     // State ScanCheckSignal
@@ -1262,13 +1265,21 @@ void	RadioInterface::scanChannelTimerTimeout(void)
         //fprintf(stderr,"Stop channel scan\n");
         ScanChannelTimer.stop();
         emit channelScanStopped();
+        emit currentStation("No Station");
 
-        StationList.sort();
+        /*StationList.sort();
         for(int i=0;i<StationList.count();i++)
         {
             QString Station = StationList.at(i);
             fprintf(stderr,"Station: %s\n",Station.toStdString().c_str());
-        }
+        }*/
+
+        // Sort stations
+        stationList.sort();
+
+        // Load stations into GUI
+        QQmlContext *rootContext = engine->rootContext();
+        rootContext->setContextProperty("stationModel", QVariant::fromValue(stationList.getList()));
     }
 }
 

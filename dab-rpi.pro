@@ -57,8 +57,8 @@ HEADERS += ./includes/dab-constants.h \
 	   ./includes/ofdm/ofdm-decoder.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
-	   ./includes/ofdm/freq-interleaver.h \
-       ./includes/ofdm/find_ofdm_spectrum.h \
+           ./includes/ofdm/freq-interleaver.h \
+           ./includes/ofdm/find_ofdm_spectrum.h \
 	   ./includes/backend/viterbi.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
@@ -99,7 +99,7 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
-       ./src/ofdm/find_ofdm_spectrum.cpp \
+           ./src/ofdm/find_ofdm_spectrum.cpp \
 	   ./src/backend/viterbi.cpp \
 	   ./src/backend/fic-handler.cpp \
 	   ./src/backend/msc-handler.cpp \
@@ -220,10 +220,10 @@ gui_3	{
         INCLUDEPATH	+= ./gui_3
         DEPENDPATH	+= ./gui_3
         HEADERS		+= ./gui_3/gui.h \
-                           ./gui_3/stationelement.h \
+                           ./gui_3/stationlist.h \
                            ./gui_3/motimageprovider.h
         SOURCES		+= ./gui_3/gui.cpp \
-                           ./gui_3/stationelement.cpp \
+                           ./gui_3/stationlist.cpp \
                            ./gui_3/motimageprovider.cpp
 
         RESOURCES += \
