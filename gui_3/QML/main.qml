@@ -157,7 +157,6 @@ ApplicationWindow {
         }
 
         SplitView {
-            //anchors.right: parent
             orientation: Qt.Vertical
             width: u.dp(320)
             Layout.maximumWidth: u.dp(320)
@@ -167,16 +166,9 @@ ApplicationWindow {
             Rectangle {
                 width: u.dp(320)
                 height: u.dp(280)
-                //color: "lightgreen"
-                /*Text {
-                    text: "MOT slideshow"
-                    //text: parent.parent.parent.parent.width
-                    anchors.centerIn: parent
-                }*/
+                color: "#212126"
                 Image {
                     id: motImage
-                    source: "image://motslideshow"
-                   // asynchronous: true
                 }
             }
         }
@@ -185,8 +177,7 @@ ApplicationWindow {
     Connections{
         target: cppGUI
         onMotChanged:{
-            // Ugly hack to reload the image
-            motImage.source = "image://motslideshow/image_" + Math.random()
+            motImage.source = "file://" + workingDir + name
         }
     }
 

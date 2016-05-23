@@ -37,7 +37,6 @@
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
 #include    "stationlist.h"
-#include    "motimageprovider.h"
 #endif
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
@@ -95,7 +94,6 @@ private:
 	bool		autoCorrector;
 const	char		*get_programm_type_string (uint8_t);
 const	char		*get_programm_language_string (uint8_t);
-    //QLabel		*pictureLabel;
 	QString		ipAddress;
 	int32_t		port;
 	bool		show_crcErrors;
@@ -106,8 +104,6 @@ const	char		*get_programm_language_string (uint8_t);
 #ifdef	GUI_3
     QTimer      CheckFICTimer;
     QTimer      ScanChannelTimer;
-    MOTImageProvider *MOTImage;
-
     QString     CurrentChannel;
     QString     CurrentStation;
     QString     CurrentDevice;
@@ -117,7 +113,6 @@ const	char		*get_programm_language_string (uint8_t);
     int         BandIIIChannelIt;
     int         BandLChannelIt;
     tScanChannelState ScanChannelState;
-    //QStringList StationList;
     StationList stationList;
 #endif
 
@@ -132,7 +127,7 @@ public slots:
 	void	show_snr		(int);
 	void	setSynced		(char);
 	void	showLabel		(QString);
-	void	showMOT			(QByteArray, int);
+    void	showMOT			(QString name, QByteArray, int);
 	void	sendDatagram		(char *, int);
 	void	changeinConfiguration	(void);
 	void	newAudio		(int);
@@ -176,7 +171,7 @@ signals:
     void stationType(QString text);
     void languageType(QString text);
     void signalPower(int power);
-    void motChanged(void);
+    void motChanged(QString name);
     void channelScanStopped(void);
     void channelScanProgress(int progress);
 };

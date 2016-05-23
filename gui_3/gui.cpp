@@ -165,17 +165,16 @@ int16_t	latency;
     isSignalPresent = false;
     isFICCRC = false;
 
-    // Add image provider for the MOT slide show
-    MOTImage = new MOTImageProvider;
-    //engine->addImageProvider(QLatin1String("motslideshow"), MOTImage);
-
-    // Load QML file
-    //engine->load(QUrl("qrc:/QML/main.qml"));
+    // Main entry to the QML GUI
+    QQmlContext *rootContext = engine->rootContext();
 
     // Set the stations
-    QQmlContext *rootContext = engine->rootContext();
     rootContext->setContextProperty("stationModel", QVariant::fromValue(stationList.getList()));
     rootContext->setContextProperty("cppGUI", this);
+
+    // Set working directory
+    QString workingDir = QDir::currentPath() + "/";
+    rootContext->setContextProperty("workingDir", workingDir);
 
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
@@ -184,9 +183,6 @@ int16_t	latency;
     connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
     connect(rootObject, SIGNAL(startChannelScanClicked()),this, SLOT(startChannelScanClick()));
     connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
-
-    // Add image provider for the MOT slide show
-    engine->addImageProvider(QLatin1String("motslideshow"), new MOTImageProvider);
 }
 
 	RadioInterface::~RadioInterface () {
@@ -202,11 +198,6 @@ int16_t	latency;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
-
-    /*s	-> setValue ("band", bandSelector -> currentText ());
-    s	-> setValue ("channel",
-                          channelSelector -> currentText ());
-    s	-> setValue ("device", deviceSelector -> currentText ());*/
 
     s->setValue ("device", CurrentDevice);
 
@@ -626,20 +617,9 @@ void	RadioInterface::showLabel	(QString s) {
 //	showMOT is triggered by the MOT handler,
 //	the GUI may decide to ignore the data sent
 //	since data is only sent whenever a data channel is selected
-void	RadioInterface::showMOT		(QByteArray data, int subtype) {
+void	RadioInterface::showMOT		(QString name, QByteArray data, int subtype) {
 #ifdef	GUI_3
-    /*if (running)
-       pictureLabel	= new QLabel (NULL);*/
-
-    QPixmap p(320,240);
-	p. loadFromData (data, subtype == 0 ? "GIF" :
-	                       subtype == 1 ? "JPEG" :
-	                       subtype == 2 ? "BMP" : "PNG");
-  /*  pictureLabel ->  setPixmap (p);
-    pictureLabel ->  show ();*/
-
-    MOTImage->setPixmap(p);
-    emit motChanged();
+    emit motChanged(name);
 #endif
 }
 
@@ -767,10 +747,7 @@ void	RadioInterface::TerminateProcess (void) {
 	delete		soundOut;
 	soundOut	= NULL;		// signals may be pending, so careful
 #ifdef	GUI_3
-    //delete		displayTimer;
-    /*if (pictureLabel != NULL)
-	   delete pictureLabel;
-    pictureLabel = NULL;		// signals may be pending, so careful*/
+
 #endif
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
@@ -1081,9 +1058,6 @@ QString a;
 	   default:
 	      return;
 	}
-    /*if (pictureLabel != NULL)
-	   delete pictureLabel;
-    pictureLabel = NULL;*/
 }
 //
 #endif
