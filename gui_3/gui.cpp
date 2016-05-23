@@ -150,7 +150,7 @@ int16_t	latency;
     for(int i=1;i<=channelcount;i++)
     {
         QStringList SaveChannel = dabSettings->value("channel/"+QString::number(i)).toStringList();
-        stationList.append(SaveChannel.last(), SaveChannel.first());
+        stationList.append(SaveChannel.first(), SaveChannel.last());
     }
     dabSettings->endGroup();
 
@@ -191,6 +191,7 @@ int16_t	latency;
 
 	RadioInterface::~RadioInterface () {
 	fprintf (stderr, "deleting radioInterface\n");
+    TerminateProcess();
 }
 //
 /**
@@ -201,6 +202,32 @@ int16_t	latency;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
+
+    /*s	-> setValue ("band", bandSelector -> currentText ());
+    s	-> setValue ("channel",
+                          channelSelector -> currentText ());
+    s	-> setValue ("device", deviceSelector -> currentText ());*/
+
+    s->setValue ("device", CurrentDevice);
+
+    // Remove old channels
+    s->beginGroup("channels");
+    int ChannelCount = s->value("channelcout").toInt();
+
+    for(int i=1;i<=ChannelCount;i++)
+    {
+        s->remove("channel/"+QString::number(i));
+    }
+
+    // Save channels
+    ChannelCount = stationList.count();
+    s->value("channelcout",QString::number(ChannelCount));
+
+    for(int i=1;i<=ChannelCount;i++)
+    {
+        s->setValue("channel/"+QString::number(i), stationList.getStationAt(i-1));
+    }
+    dabSettings->endGroup();
 }
 //
 ///	the values for the different Modes:
@@ -514,11 +541,13 @@ void	RadioInterface::clearEnsemble	(void) {
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &s) {
 #ifdef	GUI_3
-    fprintf(stderr,"Found station %s\n", s.toStdString().c_str());
-
     // Add new station into list
-    if(!s.contains("data"))
+    if(!s.contains("data") && !stationList.contains(s))
+    {
         stationList.append(s, CurrentChannel);
+
+        fprintf(stderr,"Found station %s\n", s.toStdString().c_str());
+    }
 #endif
 }
 
@@ -599,8 +628,8 @@ void	RadioInterface::showLabel	(QString s) {
 //	since data is only sent whenever a data channel is selected
 void	RadioInterface::showMOT		(QByteArray data, int subtype) {
 #ifdef	GUI_3
-	if (running)
-	   pictureLabel	= new QLabel (NULL);
+    /*if (running)
+       pictureLabel	= new QLabel (NULL);*/
 
     QPixmap p(320,240);
 	p. loadFromData (data, subtype == 0 ? "GIF" :
@@ -739,9 +768,9 @@ void	RadioInterface::TerminateProcess (void) {
 	soundOut	= NULL;		// signals may be pending, so careful
 #ifdef	GUI_3
     //delete		displayTimer;
-	if (pictureLabel != NULL)
+    /*if (pictureLabel != NULL)
 	   delete pictureLabel;
-	pictureLabel = NULL;		// signals may be pending, so careful
+    pictureLabel = NULL;		// signals may be pending, so careful*/
 #endif
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
@@ -881,6 +910,7 @@ void	RadioInterface::set_bandSelect (QString s) {
 void	RadioInterface::setDevice (QString s) {
 bool	success;
 
+    CurrentDevice = s;
 ///	indicate that we are not running anymore
 	running	= false;
 	soundOut	-> stop ();
@@ -1051,9 +1081,9 @@ QString a;
 	   default:
 	      return;
 	}
-	if (pictureLabel != NULL)
+    /*if (pictureLabel != NULL)
 	   delete pictureLabel;
-	pictureLabel = NULL;
+    pictureLabel = NULL;*/
 }
 //
 #endif

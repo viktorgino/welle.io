@@ -68,6 +68,42 @@ void StationList::sort(void)
     qSort(stationList.begin(), stationList.end(), variantLessThan);
 }
 
+int StationList::count(void)
+{
+    return stationList.count();
+}
+
+StationElement* StationList::at(int i)
+{
+    return (StationElement*) stationList.at(i);
+}
+
+QStringList StationList::getStationAt(int i)
+{
+    QString StationName = at(i)->getStationName();
+    QString ChannelName = at(i)->getChannelName();
+
+    QStringList StationElement;
+
+    StationElement.append(StationName);
+    StationElement.append(ChannelName);
+
+    return StationElement;
+}
+
+bool StationList::contains(QString value)
+{
+    bool result = false;
+
+    for(int i=0;i<count();i++)
+    {
+        if(at(i)->getStationName() == value)
+            result = true;
+    }
+
+    return result;
+}
+
 void StationList::append(QString StationName, QString ChannelName)
 {
     stationList.append(new StationElement(StationName, ChannelName));

@@ -95,7 +95,7 @@ private:
 	bool		autoCorrector;
 const	char		*get_programm_type_string (uint8_t);
 const	char		*get_programm_language_string (uint8_t);
-	QLabel		*pictureLabel;
+    //QLabel		*pictureLabel;
 	QString		ipAddress;
 	int32_t		port;
 	bool		show_crcErrors;
@@ -110,6 +110,7 @@ const	char		*get_programm_language_string (uint8_t);
 
     QString     CurrentChannel;
     QString     CurrentStation;
+    QString     CurrentDevice;
     bool        isFICCRC;
     bool        isSignalPresent;
 

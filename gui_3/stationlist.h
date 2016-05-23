@@ -61,6 +61,10 @@ public:
 
     void reset(void);
     void sort(void);
+    int count(void);
+    StationElement* at(int i);
+    QStringList getStationAt(int i);
+    bool contains(QString value);
     void append(QString StationName, QString ChannelName);
     QList<QObject*>  getList(void);
 
