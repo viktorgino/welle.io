@@ -271,19 +271,17 @@ endif (GUI_3)
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 		./gui_3/gui.h
-		./gui_3/stationelement.h)
+		./gui_3/stationlist.h)
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 		./gui_3/gui.h
-		./gui_3/stationelement.h
-		./gui_3/motimageprovider.h)
+		./gui_3/stationlist.h)
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 		./gui_3/gui.cpp
-		./gui_3/stationelement.cpp
-		./gui_3/motimageprovider.cpp)
+		./gui_3/stationlist.cpp)
 
 	   set (GUI_3_lib Qt5::Qml
 			Qt5::Quick)
