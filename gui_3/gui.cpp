@@ -143,9 +143,6 @@ int16_t	latency;
     if (autoStart)
        setStart ();
 
-    // List for the stations model
-    QList<QObject*> dataList;
-
     // Read channels from the settings
     dabSettings->beginGroup("channels");
     int channelcount = dabSettings->value("channelcout").toInt();
@@ -153,40 +150,44 @@ int16_t	latency;
     for(int i=1;i<=channelcount;i++)
     {
         QStringList SaveChannel = dabSettings->value("channel/"+QString::number(i)).toStringList();
-        dataList.append(new StationElement(SaveChannel.last(), SaveChannel.first()));
+        stationList.append(SaveChannel.first(), SaveChannel.last());
     }
     dabSettings->endGroup();
 
+    // Sort stations
+    stationList.sort();
+
     // Set timer
     connect(&CheckFICTimer, SIGNAL(timeout()),this, SLOT(CheckFICTimerTimeout()));
+    connect(&ScanChannelTimer, SIGNAL(timeout()),this, SLOT(scanChannelTimerTimeout()));
 
     // Reset
+    isSignalPresent = false;
     isFICCRC = false;
 
-    // Add image provider for the MOT slide show
-    MOTImage = new MOTImageProvider;
-    //engine->addImageProvider(QLatin1String("motslideshow"), MOTImage);
-
-    // Load QML file
-    //engine->load(QUrl("qrc:/QML/main.qml"));
+    // Main entry to the QML GUI
+    QQmlContext *rootContext = engine->rootContext();
 
     // Set the stations
-    QQmlContext *rootContext = engine->rootContext();
-    rootContext->setContextProperty("stationModel", QVariant::fromValue(dataList));
+    rootContext->setContextProperty("stationModel", QVariant::fromValue(stationList.getList()));
     rootContext->setContextProperty("cppGUI", this);
+
+    // Set working directory
+    QString workingDir = QDir::currentPath() + "/";
+    rootContext->setContextProperty("workingDir", workingDir);
 
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
 
     // Connect signals
-    connect(rootObject, SIGNAL(qmlSignal(QString,QString)),this, SLOT(channelClick(QString,QString)));
-
-    // Add image provider for the MOT slide show
-    engine->addImageProvider(QLatin1String("motslideshow"), new MOTImageProvider);
+    connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
+    connect(rootObject, SIGNAL(startChannelScanClicked()),this, SLOT(startChannelScanClick()));
+    connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
 }
 
 	RadioInterface::~RadioInterface () {
 	fprintf (stderr, "deleting radioInterface\n");
+    TerminateProcess();
 }
 //
 /**
@@ -197,6 +198,27 @@ int16_t	latency;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
+
+    s->setValue ("device", CurrentDevice);
+
+    // Remove old channels
+    s->beginGroup("channels");
+    int ChannelCount = s->value("channelcout").toInt();
+
+    for(int i=1;i<=ChannelCount;i++)
+    {
+        s->remove("channel/"+QString::number(i));
+    }
+
+    // Save channels
+    ChannelCount = stationList.count();
+    s->value("channelcout",QString::number(ChannelCount));
+
+    for(int i=1;i<=ChannelCount;i++)
+    {
+        s->setValue("channel/"+QString::number(i), stationList.getStationAt(i-1));
+    }
+    dabSettings->endGroup();
 }
 //
 ///	the values for the different Modes:
@@ -452,8 +474,8 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-    setDevice 		("dabstick");
-    //setDevice 		("rtl_tcp");
+    //setDevice 		("dabstick");
+    setDevice 		("rtl_tcp");
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here
@@ -510,10 +532,13 @@ void	RadioInterface::clearEnsemble	(void) {
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &s) {
 #ifdef	GUI_3
-/*	Services << s;
-	Services. removeDuplicates ();
-	ensemble. setStringList (Services);
-    ensembleDisplay	-> setModel (&ensemble);*/
+    // Add new station into list
+    if(!s.contains("data") && !stationList.contains(s))
+    {
+        stationList.append(s, CurrentChannel);
+
+        fprintf(stderr,"Found station %s\n", s.toStdString().c_str());
+    }
 #endif
 }
 
@@ -592,20 +617,9 @@ void	RadioInterface::showLabel	(QString s) {
 //	showMOT is triggered by the MOT handler,
 //	the GUI may decide to ignore the data sent
 //	since data is only sent whenever a data channel is selected
-void	RadioInterface::showMOT		(QByteArray data, int subtype) {
+void	RadioInterface::showMOT		(QString name, QByteArray data, int subtype) {
 #ifdef	GUI_3
-	if (running)
-	   pictureLabel	= new QLabel (NULL);
-
-    QPixmap p(320,240);
-	p. loadFromData (data, subtype == 0 ? "GIF" :
-	                       subtype == 1 ? "JPEG" :
-	                       subtype == 2 ? "BMP" : "PNG");
-  /*  pictureLabel ->  setPixmap (p);
-    pictureLabel ->  show ();*/
-
-    MOTImage->setPixmap(p);
-    emit motChanged();
+    emit motChanged(name);
 #endif
 }
 
@@ -665,19 +679,9 @@ void    RadioInterface::setStereo (bool isStereo) {
 
 void    RadioInterface::setSignalPresent (bool isSignal) {
 #ifdef	GUI_3
-    //isSignalPresent = isSignal;
+    isSignalPresent = isSignal;
 
     emit signalFlag(isSignal);
-
-    /*if(isSignal)
-    {
-        CLED_SIGNAL->SetLight(CMultColorLED::RL_GREEN);
-        //LabelServiceLabel->setText("Syncing ...");
-    }
-    else
-    {
-        CLED_SIGNAL->SetLight(CMultColorLED::RL_RED);
-    }*/
 #endif
 }
 
@@ -743,10 +747,7 @@ void	RadioInterface::TerminateProcess (void) {
 	delete		soundOut;
 	soundOut	= NULL;		// signals may be pending, so careful
 #ifdef	GUI_3
-    //delete		displayTimer;
-	if (pictureLabel != NULL)
-	   delete pictureLabel;
-	pictureLabel = NULL;		// signals may be pending, so careful
+
 #endif
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
@@ -886,6 +887,7 @@ void	RadioInterface::set_bandSelect (QString s) {
 void	RadioInterface::setDevice (QString s) {
 bool	success;
 
+    CurrentDevice = s;
 ///	indicate that we are not running anymore
 	running	= false;
 	soundOut	-> stop ();
@@ -1056,9 +1058,6 @@ QString a;
 	   default:
 	      return;
 	}
-	if (pictureLabel != NULL)
-	   delete pictureLabel;
-	pictureLabel = NULL;
 }
 //
 #endif
@@ -1121,5 +1120,172 @@ void	RadioInterface::channelClick(QString StationName, QString ChannelName)
 
     emit currentStation("Tuning ...");
 }
+
+void	RadioInterface::startChannelScanClick(void)
+{
+    BandIIIChannelIt = 0;
+    BandLChannelIt = 0;
+
+    // Set first state
+    ScanChannelState = ScanStart;
+
+    // Start channel scan
+    ScanChannelTimer.start(1000);
+}
+
+void	RadioInterface::stopChannelScanClick(void)
+{
+    // Stop channel scan
+    //ScanChannelTimer.stop();
+    ScanChannelState = ScanDone;
+}
+
+
+
+void	RadioInterface::scanChannelTimerTimeout(void)
+{
+    static int Timeout = 0;
+
+    // **** The channel scan is done by a simple state machine ***
+
+    // State ScanStart
+    if(ScanChannelState == ScanStart)
+    {
+        //fprintf(stderr,"State: ScanStart\n");
+
+        // Open and start the radio
+        setStart ();
+
+        // Reset the station list
+        //StationList.clear();
+        stationList.reset();
+
+        ScanChannelState = ScanTunetoChannel;
+    }
+
+    // State ScanTunetoChannel
+    if(ScanChannelState == ScanTunetoChannel)
+    {
+        //fprintf(stderr,"State: ScanTunetoChannel\n");
+
+        // Select channel
+        if(BandIIIChannelIt < 38) // 38 band III frequencies
+        {
+            CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
+            dabBand	= BAND_III;
+            fprintf(stderr,"Scan channel: %s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
+            BandIIIChannelIt ++;
+            emit channelScanProgress(BandIIIChannelIt);
+
+            // Tune to channel
+            set_channelSelect (CurrentChannel);
+
+            Timeout = 0;
+            ScanChannelState = ScanCheckSignal;
+        }
+        /*else if(BandLChannelIt < 16) // 16 L band frequencies
+        {
+            CurrentChannel = Lband_frequencies [BandLChannelIt]. key;
+            dabBand	= L_BAND;
+            fprintf(stderr,"Scan channel: %s, %d kHz\n", Lband_frequencies [BandLChannelIt]. key, Lband_frequencies [BandLChannelIt].fKHz);
+            BandLChannelIt++;
+            emit channelScanProgress(BandIIIChannelIt + BandLChannelIt);
+
+            // Tune to channel
+            set_channelSelect (CurrentChannel);
+
+            Timeout = 0;
+            ScanChannelState = ScanCheckSignal;
+        }*/
+        else
+        {
+            ScanChannelState = ScanDone;
+        }
+
+        emit currentStation("Scanning " + CurrentChannel + " ...");
+    }
+
+    // State ScanCheckSignal
+    if(ScanChannelState == ScanCheckSignal)
+    {
+        //fprintf(stderr,"State: ScanCheckSignal\n");
+
+        if(isSignalPresent)
+        {
+            Timeout = 0;
+            ScanChannelState = ScanWaitForFIC;
+        }
+        else
+        {
+            Timeout++;
+        }
+
+        // 2 s timeout
+        if(Timeout >= 2)
+        {
+            //fprintf(stderr,"ScanCheckSignal Timeout\n");
+            ScanChannelState = ScanTunetoChannel;
+        }
+    }
+
+    // State ScanWaitForFIC
+    if(ScanChannelState == ScanWaitForFIC)
+    {
+        //fprintf(stderr,"State: ScanWaitForFIC\n");
+
+        if(isFICCRC)
+        {
+            fprintf(stderr,"Found channel %s\n", CurrentChannel.toStdString().c_str());
+
+            Timeout = 0;
+            ScanChannelState = ScanWaitForChannelNames;
+        }
+        else
+        {
+            Timeout++;
+        }
+
+        // 10 s timeout
+        if(Timeout >= 10)
+        {
+            //fprintf(stderr,"ScanWaitForFIC Timeout\n");
+            ScanChannelState = ScanTunetoChannel;
+        }
+    }
+
+    // State ScanWaitForChannelNames
+    if(ScanChannelState == ScanWaitForChannelNames)
+    {
+        Timeout++;
+
+        // 20 s timeout
+        if(Timeout >= 20)
+            ScanChannelState = ScanTunetoChannel;
+    }
+
+    // State ScanDone
+    if(ScanChannelState == ScanDone)
+    {
+        //fprintf(stderr,"Stop channel scan\n");
+        ScanChannelTimer.stop();
+        emit channelScanStopped();
+        emit currentStation("No Station");
+
+        /*StationList.sort();
+        for(int i=0;i<StationList.count();i++)
+        {
+            QString Station = StationList.at(i);
+            fprintf(stderr,"Station: %s\n",Station.toStdString().c_str());
+        }*/
+
+        // Sort stations
+        stationList.sort();
+
+        // Load stations into GUI
+        QQmlContext *rootContext = engine->rootContext();
+        rootContext->setContextProperty("stationModel", QVariant::fromValue(stationList.getList()));
+    }
+}
+
 
 #endif

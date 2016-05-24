@@ -43,8 +43,8 @@ int16_t	i, j;
 	ordernumber	= 1;
 	theDirectory	= NULL;
 	old_slide	= NULL;
-	connect (this, SIGNAL (the_picture (QByteArray, int)),
-	         mr, SLOT (showMOT (QByteArray, int)));
+    connect (this, SIGNAL (the_picture (QString, QByteArray, int)),
+             mr, SLOT (showMOT (QString, QByteArray, int)));
 }
 
 	 	motHandler::~motHandler (void) {
@@ -332,7 +332,7 @@ int16_t i;
 	      p -> marked [i] = false;
 	fprintf (stderr, "going to show picture %s\n",
 	                                   (p -> name). toLatin1 (). data ());
-	the_picture (p -> body, p -> contentsubType);
+    the_picture (p -> name, p -> body, p -> contentsubType);
 	old_slide	= p;
 }
 

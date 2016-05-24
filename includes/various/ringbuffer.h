@@ -278,11 +278,8 @@ static std::clock_t begin_time = std::clock();
 
     if((float( std::clock () - begin_time ) /  CLOCKS_PER_SEC) > 10)
     {
-        fprintf(stderr,"Input buffer overflows: %d  (within 10 s)", Overflows);
         if(Overflows)
-            fprintf(stderr,", CPU to slow?\n");
-        else
-            fprintf(stderr,"\n");
+            fprintf(stderr,"Input buffer overflows: %d  (within 10 s), CPU to slow?\n", Overflows);
 
         begin_time = std::clock();
         Overflows=0;

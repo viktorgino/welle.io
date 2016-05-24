@@ -36,8 +36,7 @@
 #include	<QTimer>
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
-#include    "stationelement.h"
-#include    "motimageprovider.h"
+#include    "stationlist.h"
 #endif
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
@@ -51,6 +50,15 @@ class	ficHandler;
 
 class	common_fft;
 
+typedef enum
+{
+    ScanStart,
+    ScanTunetoChannel,
+    ScanCheckSignal,
+    ScanWaitForFIC,
+    ScanWaitForChannelNames,
+    ScanDone
+} tScanChannelState;
 
 /*
  *	GThe main gui object. It inherits from
@@ -86,7 +94,6 @@ private:
 	bool		autoCorrector;
 const	char		*get_programm_type_string (uint8_t);
 const	char		*get_programm_language_string (uint8_t);
-	QLabel		*pictureLabel;
 	QString		ipAddress;
 	int32_t		port;
 	bool		show_crcErrors;
@@ -96,11 +103,17 @@ const	char		*get_programm_language_string (uint8_t);
     int16_t		ficSuccess;
 #ifdef	GUI_3
     QTimer      CheckFICTimer;
-    MOTImageProvider *MOTImage;
-
+    QTimer      ScanChannelTimer;
     QString     CurrentChannel;
     QString     CurrentStation;
+    QString     CurrentDevice;
     bool        isFICCRC;
+    bool        isSignalPresent;
+
+    int         BandIIIChannelIt;
+    int         BandLChannelIt;
+    tScanChannelState ScanChannelState;
+    StationList stationList;
 #endif
 
 public slots:
@@ -114,7 +127,7 @@ public slots:
 	void	show_snr		(int);
 	void	setSynced		(char);
 	void	showLabel		(QString);
-	void	showMOT			(QByteArray, int);
+    void	showMOT			(QString name, QByteArray, int);
 	void	sendDatagram		(char *, int);
 	void	changeinConfiguration	(void);
 	void	newAudio		(int);
@@ -142,9 +155,11 @@ private slots:
     void	set_dumping		(void);
     void	set_audioDump		(void);
     void    CheckFICTimerTimeout    (void);
-#endif
     void    channelClick(QString, QString);
-
+    void    startChannelScanClick(void);
+    void    stopChannelScanClick(void);
+    void    scanChannelTimerTimeout(void);
+#endif
 signals:
     void currentStation(QString text);
     void signalFlag(bool active);
@@ -156,7 +171,9 @@ signals:
     void stationType(QString text);
     void languageType(QString text);
     void signalPower(int power);
-    void motChanged(void);
+    void motChanged(QString name);
+    void channelScanStopped(void);
+    void channelScanProgress(int progress);
 };
 
 #endif
