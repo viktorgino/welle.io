@@ -96,7 +96,7 @@ Item {
             id: channelScanProgressBar
             style: progressBarStyle
             minimumValue: 0
-            maximumValue: 54
+            maximumValue: 49
             implicitWidth: u.dp(305)
         }
 

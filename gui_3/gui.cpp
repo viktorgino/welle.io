@@ -212,7 +212,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 
     // Save channels
     ChannelCount = stationList.count();
-    s->value("channelcout",QString::number(ChannelCount));
+    s->setValue("channelcout",QString::number(ChannelCount));
 
     for(int i=1;i<=ChannelCount;i++)
     {
@@ -474,8 +474,8 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-    //setDevice 		("dabstick");
-    setDevice 		("rtl_tcp");
+    setDevice 		("dabstick");
+    //setDevice 		("rtl_tcp");
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here
@@ -1245,8 +1245,8 @@ void	RadioInterface::scanChannelTimerTimeout(void)
             Timeout++;
         }
 
-        // 10 s timeout
-        if(Timeout >= 10)
+        // 30 s timeout
+        if(Timeout >= 30)
         {
             //fprintf(stderr,"ScanWaitForFIC Timeout\n");
             ScanChannelState = ScanTunetoChannel;
@@ -1258,8 +1258,8 @@ void	RadioInterface::scanChannelTimerTimeout(void)
     {
         Timeout++;
 
-        // 20 s timeout
-        if(Timeout >= 20)
+        // 30 s timeout
+        if(Timeout >= 30)
             ScanChannelState = ScanTunetoChannel;
     }
 
