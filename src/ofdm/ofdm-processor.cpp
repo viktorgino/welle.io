@@ -250,11 +250,11 @@ DSPCOMPLEX	FreqCorr;
 int32_t		counter;
 float		currentStrength;
 int32_t		syncBufferIndex;
-int32_t		syncBufferSize;
 float		envBuffer	[syncBufferMask + 1];
 float		signalLevel;
 int		previous_1	= 1000;
 int		previous_2	= 1000;
+DSPCOMPLEX *nullBuffer = new DSPCOMPLEX [T_null];
 
 	running		= true;
 	fineCorrector	= 0;
@@ -282,7 +282,7 @@ checkSignal:
 //	Check it peak of the cross correlation.
 //	1 is the maximum similarity, 0 means the signals are not similar.
 //	Experiments showed that 0.85 similarity indicates a real OFDM spectrum
-       if (ODFMSpectrum < 0.85) {
+       if (ODFMSpectrum < 0.80) {
               goto checkSignal;
        }
        else {
@@ -295,13 +295,15 @@ checkSignal:
 
 ///	when really out of sync we will be here
 notSynced:
+       syncBufferIndex = 0;
 //	read in T_s samples for a next attempt;
 	   for (i = 0; i < T_s; i ++) {
 	      DSPCOMPLEX sample			= getSample (0);
 	      envBuffer [syncBufferIndex]	= jan_abs (sample);
-	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
+          syncBufferIndex++;
 	   }
 
+       //fprintf(stderr,"syncBufferIndex: %d, T_s: %d\n", syncBufferIndex, T_s);
 	   currentStrength	= 0;
 	   for (i = syncBufferIndex - 50; i < syncBufferIndex; i ++)
 	      currentStrength += envBuffer [i];
@@ -319,14 +321,13 @@ SyncOnNull:
 	   while (currentStrength / 50  > 0.50 * sLevel) {
 	      DSPCOMPLEX sample	=
 	                      getSample (coarseCorrector + fineCorrector);
-	      envBuffer [syncBufferIndex] = jan_abs (sample);
+          envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
-	      currentStrength += envBuffer [syncBufferIndex] -
-	                      envBuffer [(syncBufferIndex + syncBufferSize - 50) & syncBufferMask];
-	      syncBufferIndex =
-	                      (syncBufferIndex + 1) & syncBufferMask;
+          currentStrength += envBuffer [syncBufferIndex] - envBuffer [(syncBufferIndex - 49)];
+          syncBufferIndex++;
 	      counter ++;
-	      if (counter > 2 * T_s)	// hopeless
+
+          if ((counter > (2 * T_s)) || (syncBufferIndex == syncBufferMask))	// hopeless
               if(isReset)
                   goto checkSignal;
               else
@@ -340,13 +341,13 @@ SyncOnNull:
 SyncOnEndNull:
 	   while (currentStrength / 50 < 0.75 * sLevel) {
 	      DSPCOMPLEX sample = getSample (coarseCorrector + fineCorrector);
-	      envBuffer [syncBufferIndex] = abs (sample);
+          envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
-	      currentStrength += envBuffer [syncBufferIndex] -
-	                        envBuffer [(syncBufferIndex + syncBufferSize - 50) & syncBufferMask];
-	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
-	      counter	++;
-	      if (counter > 3 * T_s)	// hopeless
+          currentStrength += envBuffer [syncBufferIndex] - envBuffer [(syncBufferIndex - 49)];
+          syncBufferIndex++;
+          counter ++;
+
+          if ((counter > (3 * T_s)) || (syncBufferIndex == syncBufferMask))	// hopeless
               if(isReset)
                   goto checkSignal;
               else
@@ -368,20 +369,14 @@ SyncOnPhase:
   *	as long as we can be sure that the first sample to be identified
   *	is part of the samples read.
   */
-	   for (i = 0; i <  params -> T_u; i ++) {
-	      ofdmBuffer [i] = getSample (coarseCorrector + fineCorrector);
-	      envBuffer [syncBufferIndex] = jan_abs (ofdmBuffer [i]);
-
-	      currentStrength += envBuffer [syncBufferIndex] -
-	                              envBuffer [(syncBufferIndex  + syncBufferSize - 50) & syncBufferMask];
-	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
-	      counter ++;
-	   }
+       getSamples (ofdmBuffer, params -> T_u, coarseCorrector + fineCorrector);
+       counter += params -> T_u;
 //
 ///	and then, call upon the phase synchronizer to verify/compute
 ///	the real "first" sample
 	   startIndex = phaseSynchronizer ->
 	                        findIndex (ofdmBuffer);
+       //fprintf (stderr, "startIndex: %d, currentStrength: %f\n", startIndex, currentStrength);
 	   if (startIndex < 0) { // no sync, try again
 /**
   *	In case we do not have a correlation value larger than
@@ -398,6 +393,7 @@ SyncOnPhase:
 	   memmove (ofdmBuffer, &ofdmBuffer [startIndex],
 	                  (params -> T_u - startIndex) * sizeof (DSPCOMPLEX));
 	   ofdmBufferIndex	= params -> T_u - startIndex;
+       //fprintf (stderr, "t_u: %d, T_u - startIndex: %d\n",T_u, T_u- startIndex);
 
 Block_0:
 /**
@@ -417,6 +413,7 @@ Block_0:
 //	The width is limited to 2 * 35 Khz (i.e. positive and negative)
 	   if (f2Correction) {
 	      int correction		= processBlock_0 (ofdmBuffer);
+          //fprintf(stderr, "correction: %i\n", correction);
 	      if ((correction == 0) && (previous_1 == 0) &&
 	          (previous_1 == previous_2))
 	         f2Correction = false;
@@ -439,14 +436,14 @@ Data_blocks:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
-	   FreqCorr		= DSPCOMPLEX (0, 0);
+       FreqCorr		= DSPCOMPLEX (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
 	      getSamples (ofdmBuffer, T_s, coarseCorrector + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 	
-	      my_ofdmDecoder -> decodeFICblock (ofdmBuffer, ofdmSymbolCount);
+          my_ofdmDecoder -> decodeFICblock (ofdmBuffer, ofdmSymbolCount);
 	   }
 
 ///	and similar for the (params -> L - 4) MSC blocks
@@ -457,8 +454,8 @@ Data_blocks:
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
-	      my_ofdmDecoder -> decodeMscblock (ofdmBuffer, ofdmSymbolCount);
-	   }
+          my_ofdmDecoder -> decodeMscblock (ofdmBuffer, ofdmSymbolCount);
+       }
 
 NewOffset:
 ///	we integrate the newly found frequency error with the
@@ -468,23 +465,10 @@ NewOffset:
 //
 /**
   *	OK,  here we are at the end of the frame
-  *	Assume everything went well and skip T_null - 50 samples
+  *	Assume everything went well and skip T_null
   */
-	   syncBufferIndex	= 0;
-	   currentStrength	= 0;
-	   for (i = 0; i < T_null - 50; i ++) {
-	      DSPCOMPLEX sample	= getSample (coarseCorrector + fineCorrector);
-	      envBuffer [syncBufferIndex ++] = jan_abs (sample);
-	   }
-//
-/**
-  *	and  we read 50 samples for a new currentStrength
-  */
-	   for (i = T_null - 50; i < T_null; i ++) {
-	      DSPCOMPLEX sample	= getSample (coarseCorrector + fineCorrector);
-	      envBuffer [syncBufferIndex] = jan_abs (sample);
-	      currentStrength 	+= envBuffer [syncBufferIndex ++];
-	   }
+       getSamples (nullBuffer, T_null, 0);
+
 /**
   *	so, we processed Tnull samples, so the first
   *	sample to be found for the next frame should be T_g
