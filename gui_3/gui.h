@@ -174,6 +174,7 @@ signals:
     void motChanged(QString name);
     void channelScanStopped(void);
     void channelScanProgress(int progress);
+    void foundChannelCount(int channelCount);
 };
 
 #endif

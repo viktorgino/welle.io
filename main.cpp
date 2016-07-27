@@ -114,6 +114,7 @@ int32_t		opt;
 #endif
 #ifdef GUI_3 
     //QQmlApplicationEngine engine;
+    a.setFont(QFont("Arial", 10));
 
     QQmlApplicationEngine engine(QUrl("qrc:/QML/main.qml"));
     MyRadioInterface = new RadioInterface (ISettings, &engine);

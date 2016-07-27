@@ -79,7 +79,7 @@ int16_t	latency;
   *	as threshold for checking the validity of the correlation result
   */
 	threshold	=
-	           dabSettings -> value ("threshold", 3). toInt ();
+               dabSettings -> value ("threshold", 3). toInt ();
 
 	isSynced		= UNSYNCED;
 //
@@ -538,6 +538,7 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
         stationList.append(s, CurrentChannel);
 
         fprintf(stderr,"Found station %s\n", s.toStdString().c_str());
+        emit foundChannelCount(stationList.count());
     }
 #endif
 }
@@ -1126,6 +1127,10 @@ void	RadioInterface::startChannelScanClick(void)
     BandIIIChannelIt = 0;
     BandLChannelIt = 0;
 
+    // Clear old channels
+    stationList.reset();
+    emit foundChannelCount(0);
+
     // Set first state
     ScanChannelState = ScanStart;
 
@@ -1174,12 +1179,16 @@ void	RadioInterface::scanChannelTimerTimeout(void)
             CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
             dabBand	= BAND_III;
             fprintf(stderr,"Scan channel: %s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
-            BandIIIChannelIt ++;
             emit channelScanProgress(BandIIIChannelIt);
 
             // Tune to channel
             set_channelSelect (CurrentChannel);
 
+            /*if(BandIIIChannelIt == 0)
+                BandIIIChannelIt = 1;
+            if(BandIIIChannelIt == 2)
+                BandIIIChannelIt = 26;*/
+            BandIIIChannelIt ++;
             Timeout = 0;
             ScanChannelState = ScanCheckSignal;
         }

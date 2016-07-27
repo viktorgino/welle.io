@@ -50,7 +50,7 @@ ApplicationWindow {
     id: mainWindow
     visible: true
     width: u.dp(700)
-    height: u.dp(500)
+    height: u.dp(450)
 
     Units {
          id: u

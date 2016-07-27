@@ -20,6 +20,10 @@ Item {
         onChannelScanProgress:{
             channelScanProgressBar.value = progress
         }
+
+        onFoundChannelCount:{
+            channelScanProgressBarText.text = "Found channels: " + channelCount;
+        }
     }
 
     ColumnLayout {
@@ -28,7 +32,7 @@ Item {
         anchors.topMargin: u.dp(20)
         anchors.horizontalCenter: parent.horizontalCenter
 
-        RowLayout {
+        /*RowLayout {
             spacing: u.dp(20)
             Text {
                 font.pixelSize: u.em(1.3)
@@ -42,22 +46,7 @@ Item {
                 text: "Input"
                 style: touchStyle
             }
-        }
-
-        Row {
-            spacing: u.dp(20)
-            Text {
-                font.pixelSize: u.em(1.3)
-                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-                color: "white"
-                text: "Show channel in station list"
-            }
-            Switch {
-                style: switchStyle
-                id: showChannel
-                checked: true
-            }
-        }
+        }*/
 
         Row {
             spacing: u.dp(20)
@@ -96,8 +85,30 @@ Item {
             id: channelScanProgressBar
             style: progressBarStyle
             minimumValue: 0
-            maximumValue: 49
+            maximumValue: 38
             implicitWidth: u.dp(305)
+            Text {
+                id: channelScanProgressBarText
+                text: "Found channels: 0"
+                font.pixelSize: u.em(1.2)
+                color: "white"
+                anchors.centerIn: parent
+            }
+        }
+
+        Row {
+            spacing: u.dp(20)
+            Text {
+                font.pixelSize: u.em(1.3)
+                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                color: "white"
+                text: "Show channel in station list"
+            }
+            Switch {
+                style: switchStyle
+                id: showChannel
+                checked: true
+            }
         }
 
         /*Slider {
@@ -188,7 +199,7 @@ Item {
                     color: control.checked ? "#468bb7" : "#222"
                     Behavior on color {ColorAnimation {}}
                     Text {
-                        font.pixelSize: u.em(1.3)
+                        font.pixelSize: u.em(1.2)
                         color: "white"
                         anchors.centerIn: parent
                         text: "ON"
@@ -199,7 +210,7 @@ Item {
                     height: parent.height
                     anchors.right: parent.right
                     Text {
-                        font.pixelSize: u.em(1.3)
+                        font.pixelSize: u.em(1.2)
                         color: "white"
                         anchors.centerIn: parent
                         text: "OFF"
@@ -224,7 +235,7 @@ Item {
         id: progressBarStyle
         ProgressBarStyle {
             panel: Rectangle {
-                implicitHeight: u.dp(15)
+                implicitHeight: u.dp(25)
                 implicitWidth: u.dp(400)
                 color: "#444"
                 opacity: 0.8
