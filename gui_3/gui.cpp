@@ -179,21 +179,29 @@ int16_t	latency;
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
 
-    // Set fullscreen if required
-    QString isFullscreen = dabSettings	-> value ("StartInFullScreen", "No").toString();
-    if(isFullscreen == "Yes")
-        rootObject->setProperty("visibility", "FullScreen");
+    // Set the full screen property
+    bool isFullscreen = dabSettings	-> value ("StartInFullScreen", false).toBool();
+    QObject *enableFullScreenObject = rootObject->findChild<QObject*>("enableFullScreen");
+    if(enableFullScreenObject)
+        enableFullScreenObject->setProperty("checked", isFullscreen);
+
+    // Set the show channel names property
+    bool isShowChannelNames = dabSettings-> value ("ShowChannelNames", false).toBool();
+    QObject *showChannelObject = rootObject->findChild<QObject*>("showChannel");
+    if(showChannelObject)
+        showChannelObject->setProperty("checked", isShowChannelNames);
 
     // Connect signals
     connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
     connect(rootObject, SIGNAL(startChannelScanClicked()),this, SLOT(startChannelScanClick()));
     connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
     connect(rootObject, SIGNAL(exitApplicationClicked()),this, SLOT(TerminateProcess()));
+    connect(rootObject, SIGNAL(exitSettingsClicked()),this, SLOT(saveSettings()));
 }
 
 	RadioInterface::~RadioInterface () {
 	fprintf (stderr, "deleting radioInterface\n");
-    TerminateProcess();
+    //TerminateProcess();
 }
 //
 /**
@@ -225,6 +233,29 @@ void	RadioInterface::dumpControlState (QSettings *s) {
         s->setValue("channel/"+QString::number(i), stationList.getStationAt(i-1));
     }
     dabSettings->endGroup();
+
+    /* Read settings from GIU */
+
+    // Take the root object
+    QObject *rootObject = engine->rootObjects().first();
+
+    // Access the full screen mode switch
+    QObject *enableFullScreenObject = rootObject->findChild<QObject*>("enableFullScreen");
+    if(enableFullScreenObject)
+    {
+        bool isFullScreen = enableFullScreenObject->property("checked").toBool();
+        // Save the setting
+        s->setValue("StartInFullScreen", isFullScreen);
+    }
+
+    // Access the visible channel names
+    QObject *showChannelObject = rootObject->findChild<QObject*>("showChannel");
+    if(showChannelObject)
+    {
+        bool isShowChannel = showChannelObject->property("checked").toBool();
+        // Save the setting
+        s->setValue("ShowChannelNames", isShowChannel);
+    }
 }
 //
 ///	the values for the different Modes:
@@ -1302,5 +1333,10 @@ void	RadioInterface::scanChannelTimerTimeout(void)
     }
 }
 
+void RadioInterface::saveSettings(void)
+{
+    // Save settings
+    dumpControlState(dabSettings);
+}
 
 #endif

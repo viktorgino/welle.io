@@ -7,6 +7,7 @@ Item {
     id: settingsPage
 
     property alias showChannelState : showChannel.checked
+    property alias enableFullScreenState : enableFullScreen.checked
     signal startChannelScan
     signal stopChannelScan
 
@@ -32,73 +33,61 @@ Item {
         anchors.topMargin: u.dp(20)
         anchors.horizontalCenter: parent.horizontalCenter
 
-        /*RowLayout {
-            spacing: u.dp(20)
-            Text {
-                font.pixelSize: u.em(1.3)
-                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-                color: "white"
-                text: "Input"
-            }
-            Button {
-                id: comboButton
-                checkable: true
-                text: "Input"
-                style: touchStyle
-            }
-        }*/
-
-        Row {
-            spacing: u.dp(20)
-            Text {
-                font.pixelSize: u.em(1.3)
-                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-                color: "white"
-                text: "Channel scan"
-            }
-            Button {
-                id: startChannelScanButton
-                text: "Start"
-                style: touchStyle
-                implicitWidth: u.dp(80)
-                onClicked: {
-                    startChannelScanButton.enabled = false
-                    stopChannelScanButton.enabled = true
-                    settingsPage.startChannelScan()
+        Column{
+            spacing: u.dp(10)
+            Row {
+                spacing: u.dp(20)
+                Text {
+                    font.pixelSize: u.em(1.3)
+                    Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                    color: "white"
+                    text: "Channel scan"
+                }
+                Button {
+                    id: startChannelScanButton
+                    text: "Start"
+                    style: touchStyle
+                    implicitWidth: u.dp(80)
+                    onClicked: {
+                        startChannelScanButton.enabled = false
+                        stopChannelScanButton.enabled = true
+                        settingsPage.startChannelScan()
+                    }
+                }
+                Button {
+                    id: stopChannelScanButton
+                    text: "Stop"
+                    style: touchStyle
+                    implicitWidth: u.dp(80)
+                    enabled: false
+                    onClicked: {
+                        startChannelScanButton.enabled = true
+                        stopChannelScanButton.enabled = false
+                        settingsPage.stopChannelScan()
+                    }
                 }
             }
-            Button {
-                id: stopChannelScanButton
-                text: "Stop"
-                style: touchStyle
-                implicitWidth: u.dp(80)
-                enabled: false
-                onClicked: {
-                    startChannelScanButton.enabled = true
-                    stopChannelScanButton.enabled = false
-                    settingsPage.stopChannelScan()
-                }
-            }
-        }
 
-        ProgressBar{
-            id: channelScanProgressBar
-            style: progressBarStyle
-            minimumValue: 0
-            maximumValue: 38
-            implicitWidth: u.dp(305)
-            Text {
-                id: channelScanProgressBarText
-                text: "Found channels: 0"
-                font.pixelSize: u.em(1.2)
-                color: "white"
-                anchors.centerIn: parent
+            ProgressBar{
+                id: channelScanProgressBar
+                style: progressBarStyle
+                minimumValue: 0
+                maximumValue: 38
+                implicitWidth: u.dp(305)
+                Text {
+                    id: channelScanProgressBarText
+                    text: "Found channels: 0"
+                    font.pixelSize: u.em(1.2)
+                    color: "white"
+                    anchors.centerIn: parent
+                }
             }
         }
 
         Row {
             spacing: u.dp(20)
             Text {
+                width: u.dp(210)
                 font.pixelSize: u.em(1.3)
                 Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                 color: "white"
@@ -107,7 +96,25 @@ Item {
             Switch {
                 style: switchStyle
                 id: showChannel
-                checked: true
+                objectName: "showChannel"
+                checked: false
+            }
+        }
+
+        Row {
+            spacing: u.dp(20)
+            Text {
+                width: u.dp(210)
+                font.pixelSize: u.em(1.3)
+                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                color: "white"
+                text: "Enable full screen mode"
+            }
+            Switch {
+                style: switchStyle
+                id: enableFullScreen
+                objectName: "enableFullScreen"
+                checked: false
             }
         }
 
@@ -199,7 +206,7 @@ Item {
                     color: control.checked ? "#468bb7" : "#222"
                     Behavior on color {ColorAnimation {}}
                     Text {
-                        font.pixelSize: u.em(1.2)
+                        font.pixelSize: u.em(1.1)
                         color: "white"
                         anchors.centerIn: parent
                         text: "ON"
@@ -210,7 +217,7 @@ Item {
                     height: parent.height
                     anchors.right: parent.right
                     Text {
-                        font.pixelSize: u.em(1.2)
+                        font.pixelSize: u.em(1.1)
                         color: "white"
                         anchors.centerIn: parent
                         text: "OFF"

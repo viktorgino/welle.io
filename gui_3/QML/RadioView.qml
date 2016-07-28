@@ -110,7 +110,7 @@ Item{
         anchors.centerIn: parent
         text: "No Station"
         color: "white"
-        font.pixelSize: u.em(2.5)
+        font.pixelSize: u.em(2.3)
     }
 
     Connections{

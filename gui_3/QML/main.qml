@@ -47,11 +47,13 @@ ApplicationWindow {
     signal startChannelScanClicked
     signal stopChannelScanClicked
     signal exitApplicationClicked
+    signal exitSettingsClicked
 
     id: mainWindow
     visible: true
     width: u.dp(700)
     height: u.dp(450)
+    visibility: settingsPageLoader.settingsPage.enableFullScreenState ? "FullScreen" : "Windowed"
 
     Units {
          id: u
@@ -101,7 +103,14 @@ ApplicationWindow {
                 scale: 1
                 anchors.fill: parent
                 anchors.margins: u.dp(-20)
-                onClicked: stackView.depth > 1 ? stackView.pop() : stackView.push(settingsPageLoader)
+                onClicked: {
+                    if(stackView.depth > 1) {
+                        stackView.pop();
+                        exitSettingsClicked();
+                    }
+                    else
+                        stackView.push(settingsPageLoader)
+                }
             }
         }
 

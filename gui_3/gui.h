@@ -159,6 +159,7 @@ private slots:
     void    startChannelScanClick(void);
     void    stopChannelScanClick(void);
     void    scanChannelTimerTimeout(void);
+    void    saveSettings(void);
 #endif
 signals:
     void currentStation(QString text);
