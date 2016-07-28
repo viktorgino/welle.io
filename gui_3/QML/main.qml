@@ -46,6 +46,7 @@ ApplicationWindow {
     signal stationClicked(string statio, string channel)
     signal startChannelScanClicked
     signal stopChannelScanClicked
+    signal exitApplicationClicked
 
     id: mainWindow
     visible: true
@@ -84,7 +85,6 @@ ApplicationWindow {
             width: opacity ? u.dp(60) : 0
             anchors.left: parent.left
             anchors.leftMargin: u.dp(20)
-            //opacity: stackView.depth > 1 ? 1 : 0
             anchors.verticalCenter: parent.verticalCenter
             antialiasing: true
             radius: u.dp(4)
@@ -93,7 +93,7 @@ ApplicationWindow {
             Image {
                 anchors.verticalCenter: parent.verticalCenter
                 source: stackView.depth > 1 ? "images/navigation_previous_item.png" : "images/icon-settings.png"
-                height: u.dp(20)
+                height: stackView.depth > 1 ? u.dp(20) : u.dp(23)
                 fillMode: Image.PreserveAspectFit
             }
             MouseArea {
@@ -113,6 +113,29 @@ ApplicationWindow {
             color: "white"
             text: "dab-rpi"
             //text: u.dp(1)
+        }
+
+        Rectangle {
+            id: exitButton
+            width: opacity ? u.dp(40) : 0
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            antialiasing: true
+            radius: u.dp(4)
+            color: backmouse.pressed ? "#222" : "transparent"
+            Image {
+                anchors.verticalCenter: parent.verticalCenter
+                source: stackView.depth > 1 ? "images/icon-exit.png" : ""
+                height: u.dp(23)
+                fillMode: Image.PreserveAspectFit
+            }
+            MouseArea {
+                id: exitmouse
+                scale: 1
+                anchors.fill: parent
+                anchors.margins: u.dp(-20)
+                onClicked: stackView.depth > 1 ? mainWindow.exitApplicationClicked() : {}
+            }
         }
     }
 

@@ -14,5 +14,6 @@
         <file>QML/images/textinput.png</file>
         <file>QML/images/toolbar.png</file>
         <file>QML/Units.qml</file>
+        <file>QML/images/icon-exit.png</file>
     </qresource>
 </RCC>

@@ -179,10 +179,16 @@ int16_t	latency;
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
 
+    // Set fullscreen if required
+    QString isFullscreen = dabSettings	-> value ("StartInFullScreen", "No").toString();
+    if(isFullscreen == "Yes")
+        rootObject->setProperty("visibility", "FullScreen");
+
     // Connect signals
     connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
     connect(rootObject, SIGNAL(startChannelScanClicked()),this, SLOT(startChannelScanClick()));
     connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
+    connect(rootObject, SIGNAL(exitApplicationClicked()),this, SLOT(TerminateProcess()));
 }
 
 	RadioInterface::~RadioInterface () {
@@ -752,7 +758,7 @@ void	RadioInterface::TerminateProcess (void) {
 #endif
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
-    //close ();
+    QApplication::quit();
 }
 
 //
