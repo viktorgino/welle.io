@@ -511,12 +511,13 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-    //setDevice 		("dabstick");
-    setDevice 		("rtl_tcp");
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here
 	   autoStart = false;
+    //setDevice 		("dabstick");
+    //setDevice 		("rtl_tcp");
+    setDevice 		(h);
 
 	h		= dabSettings -> value ("channel", "12C"). toString ();
 	
