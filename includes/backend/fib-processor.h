@@ -153,6 +153,7 @@ signals:
 	void		addtoEnsemble (const QString &);
 	void		nameofEnsemble	(int, const QString &);
 	void		changeinConfiguration (void);
+    void        newDateTime (int32_t*);
 };
 
 #endif

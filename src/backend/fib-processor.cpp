@@ -115,6 +115,9 @@
 	connect (this, SIGNAL (changeinConfiguration (void)),
 	         myRadioInterface,
 	         SLOT (changeinConfiguration (void)));
+    connect (this, SIGNAL (newDateTime (int32_t*)),
+             myRadioInterface,
+             SLOT (displayDateTime (int32_t*)));
 }
 	
 	fib_processor::~fib_processor (void) {
@@ -576,6 +579,8 @@ int32_t D	= d + 1;
 //	                  dateTime [0], dateTime [1], dateTime [2],
 //	                  dateTime [3], dateTime [4], dateTime [5]);
 	dateFlag	= true;
+    //fprintf(stderr, "%i:%i:%i  %i:%i:%i:%i:%i\n",dateTime [0], dateTime [1], dateTime [2], dateTime [3], dateTime [4], dateTime [5], dateTime [6], dateTime [7]);
+    emit newDateTime(dateTime);
 }
 
 void	fib_processor::FIG0Extension13 (uint8_t *d) {

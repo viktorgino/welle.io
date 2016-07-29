@@ -136,6 +136,7 @@ public slots:
 	void	show_ipErrors		(int);
     void    setStereo		(bool isStereo);
     void    setSignalPresent (bool isSignal);
+    void    displayDateTime (int32_t* DateTime);
 private slots:
 //
 //	Somehow, these must be connected to the GUI
@@ -176,6 +177,7 @@ signals:
     void channelScanStopped(void);
     void channelScanProgress(int progress);
     void foundChannelCount(int channelCount);
+    void newDateTime(int Year, int Month, int Day, int Hour, int Minute);
 };
 
 #endif

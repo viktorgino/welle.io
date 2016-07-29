@@ -121,7 +121,18 @@ ApplicationWindow {
             anchors.verticalCenter: parent.verticalCenter
             color: "white"
             text: "dab-rpi"
-            //text: u.dp(1)
+        }
+
+        Text {
+            font.pixelSize: u.em(1.3)
+            Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+            //x: exitButton.x - exitButton.width - u.dp(20)
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.rightMargin: u.dp(5)
+            color: "white"
+            text: "01.01.2016 00:00"
+            id: "dateTimeDisplay"
         }
 
         Rectangle {
@@ -193,8 +204,10 @@ ApplicationWindow {
             width: u.dp(320)
             Layout.maximumWidth: u.dp(320)
 
+            // Radio
             RadioView {}
 
+            // MOT image
             Rectangle {
                 width: u.dp(320)
                 height: u.dp(280)
@@ -210,6 +223,10 @@ ApplicationWindow {
         target: cppGUI
         onMotChanged:{
             motImage.source = "file://" + workingDir + name
+        }
+
+        onNewDateTime:{
+            dateTimeDisplay.text = u.pad(Day,2) + "." + u.pad(Month,2) + "." + Year + " " + u.pad(Hour,2) + ":" + u.pad(Minute,2)
         }
     }
 

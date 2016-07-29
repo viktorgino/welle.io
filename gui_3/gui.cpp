@@ -724,6 +724,20 @@ void    RadioInterface::setSignalPresent (bool isSignal) {
 #endif
 }
 
+void    RadioInterface::displayDateTime (int32_t* DateTime) {
+#ifdef	GUI_3
+    int Year = DateTime[0];
+    int Month = DateTime[1];
+    int Day = DateTime[2];
+    int Hour = DateTime[3];
+    int Minute = DateTime[4];
+
+    //fprintf(stderr, "%i:%i:%i  %i:%i\n",Year, Month, Day, Hour, Minute);
+
+    emit newDateTime(Year, Month, Day, Hour, Minute);
+#endif
+}
+
 //
 //	This function is only used in the Gui to clear
 //	the details of a selection
