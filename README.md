@@ -1,4 +1,92 @@
+dab-rpi with QML GUI
+====================
 
+This github fork includes a QML based GUI for dab-rpi.
+
+dab-rpi and QT 5.6 cross compiling with GPU acceleration for RPi 2 and 3 
+--------------------------------------------------------------
+The following tutorial has to be followed one by one.
+
+1. Follow the tutorial https://wiki.qt.io/RaspberryPi2EGLFS
+2. If you get the following QT compile error please read the [QTBUG-55029 ](https://bugreports.qt.io/browse/QTBUG-55029)
+  
+  ```
+   qeglfsbrcmintegration.cpp:35:22: fatal error: bcm_host.h: No such file or directory
+   #include <bcm_host.h>
+  ```
+3. Compile qtxmlpatterns on the host PC
+
+  ```
+# cd ~/raspi
+# git clone git://code.qt.io/qt/qtxmlpatterns.git -b 5.6
+# cd qtxmlpatterns
+# ~/raspi/qt5/bin/qmake -r
+# make
+# make install
+  ```
+4. Compile qtdeclarative on the host PC
+
+  ```
+# cd ~/raspi
+# git git://code.qt.io/qt/qtdeclarative.git -b 5.6
+# cd qtdeclarative
+# ~/raspi/qt5/bin/qmake -r
+# make
+# make install
+  ```
+5. Compile qtquickcontrols on the host PC
+
+  ```
+# cd ~/raspi
+# git git://code.qt.io/qt/qtquickcontrols.git -b 5.6
+# cd qtquickcontrols
+# ~/raspi/qt5/bin/qmake -r
+# make
+# make install
+  ```
+6. Compile qtquickcontrols2 on the host PC
+
+  ```
+# cd ~/raspi
+# git git://code.qt.io/qt/qtquickcontrols2.git -b 5.6
+# cd qtquickcontrols2
+# ~/raspi/qt5/bin/qmake -r
+# make
+# make install
+  ```
+7. Install all necessary libraries to compile dab-rpi on the RPi
+
+  ```
+  # apt-get install libfaad-dev libfftw3-dev portaudio19-dev libusb-1.0-0-dev librtlsdr-dev libsndfile1-dev
+  ```
+8. Resync all new files between the host PC and the RPi
+
+  ```
+# cd ~/raspi
+# rsync -avz pi@IP:/lib sysroot
+# rsync -avz pi@IP:/usr/include sysroot/usr
+# rsync -avz pi@IP:/usr/lib sysroot/usr
+# rsync -avz pi@IP:/opt/vc sysroot/opt
+  ```
+9. Adjust symlinks to be relative 
+
+  ```
+# cd ~/raspi
+# ./sysroot-relativelinks.py sysroot
+  ```
+10. Now you can setup QT Creator as it is explanied in the tutorial https://wiki.qt.io/RaspberryPi2EGLFS
+11. Clone dab-rpi and open it with QT Creator
+
+  ```
+# cd ~/raspi
+# https://github.com/AlbrechtL/dab-rpi.git
+  ```
+12. Cross compile dab-rpi, load it to the RPi and start it
+
+
+
+Original README.md
+---------------
 		DAB-RPI
 
 This directory contains the implementation of a simple
