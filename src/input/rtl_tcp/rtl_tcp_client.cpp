@@ -39,9 +39,9 @@
 	remoteSettings		= s;
 	*success		= false;
 
-	theFrame		= new QFrame;
-	setupUi (theFrame);
-	this	-> theFrame	-> show ();
+    //theFrame		= new QFrame;
+    //setupUi (theFrame);
+    //this	-> theFrame	-> show ();
 
     //	setting the defaults and constants
 	theRate		= 2048000;
@@ -53,21 +53,21 @@
 	vfoOffset	= remoteSettings ->
 	                          value ("rtl_tcp_client-offset", 0). toInt ();
 	remoteSettings	-> endGroup ();
-	tcp_gain	-> setValue (theGain);
-	tcp_ppm		-> setValue (thePpm);
+    //tcp_gain	-> setValue (theGain);
+    //tcp_ppm		-> setValue (thePpm);
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	theBuffer	= new RingBuffer<uint8_t>(32 * 32768);
 	connected	= false;
     //hostLineEdit 	= new QLineEdit (NULL);
     remoteSettings -> beginGroup ("rtl_tcp_client");
-    QString ipAddress = remoteSettings ->
+    ipAddress = remoteSettings ->
                     value ("remote-server", "0.0.0.0"). toString ();
     remoteSettings -> endGroup ();
-    hostLineEdit -> setText (ipAddress);
-    hostLineEdit	-> setInputMask ("000.000.000.000");
+    //hostLineEdit -> setText (ipAddress);
+    //hostLineEdit	-> setInputMask ("000.000.000.000");
 
 //
-	connect (tcp_connect, SIGNAL (clicked (void)),
+    /*connect (tcp_connect, SIGNAL (clicked (void)),
              this, SLOT (setConnection (void)));
 	connect (tcp_disconnect, SIGNAL (clicked (void)),
 	         this, SLOT (setDisconnect (void)));
@@ -79,9 +79,9 @@
 	         this, SLOT (set_Offset (int)));
     connect (checkAgc, SIGNAL (stateChanged (int)),
              this, SLOT (setAgc (int)));
-	state	-> setText ("waiting to start");
+    state	-> setText ("waiting to start");*/
 
-    checkAgc->setChecked(true);
+    //checkAgc->setChecked(true);
 	*success	= true;
 }
 
@@ -100,7 +100,7 @@
 	remoteSettings -> endGroup ();
 	toServer. close ();
 	delete	theBuffer;
-	delete	hostLineEdit;
+    //delete	hostLineEdit;
 	delete	theFrame;
 }
 //
@@ -123,10 +123,10 @@ int16_t	i;
 	if (ipAddress. isEmpty())
        ipAddress = QHostAddress (QHostAddress::LocalHost).toString ();*/
 
-	hostLineEdit	-> setInputMask ("000.000.000.000");
+    //hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit	-> show ();
-	state	-> setText ("Give IP address, return");
+    //hostLineEdit	-> show ();
+    //state	-> setText ("Give IP address, return");
 
 }
 
@@ -138,14 +138,14 @@ void	rtl_tcp_client::setConnection (void) {
     if (connected)
        return;
 
-    QString s	= hostLineEdit -> text ();
-    QHostAddress theAddress	= QHostAddress (s);
+    //QString s	= hostLineEdit -> text ();
+    QHostAddress theAddress	= QHostAddress (ipAddress);
 
-	serverAddress	= QHostAddress (s);
+    serverAddress	= QHostAddress (ipAddress);
 	basePort	= 1235;
-	disconnect (hostLineEdit, SIGNAL (returnPressed (void)),
-	            this, SLOT (setConnection (void)));
-	toServer. connectToHost (serverAddress, basePort);
+    /*disconnect (hostLineEdit, SIGNAL (returnPressed (void)),
+                this, SLOT (setConnection (void)))*/
+    toServer. connectToHost (serverAddress, basePort);
 	if (!toServer. waitForConnected (2000)) {
 	   QMessageBox::warning (theFrame, tr ("sdr"),
 	                                   tr ("connection failed\n"));
@@ -164,13 +164,13 @@ void	rtl_tcp_client::setConnection (void) {
 
 	sendGain (theGain);
 	sendRate (theRate);
-    if (checkAgc -> isChecked ())
+    //if (checkAgc -> isChecked ())
         setAgc(true);
-    else
-        setAgc(false);
+    /*else
+        setAgc(false);*/
 	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
 	toServer. waitForBytesWritten ();
-	state -> setText ("Connected");
+    //state -> setText ("Connected");
 	connected	= true;
 }
 
@@ -319,7 +319,7 @@ void	rtl_tcp_client::setGainMode (int32_t gainMode) {
 }
 //
 void	rtl_tcp_client::GainChanged (int gain) {
-    checkAgc->setChecked(false);
+    //checkAgc->setChecked(false);
     theGain		= gain;
     sendGain(gain);
 }
@@ -347,8 +347,8 @@ void	rtl_tcp_client::setDisconnect (void) {
 	   toServer. close ();
 	}
 	connected	= false;
-	connectedLabel	-> setText (" ");
-	state		-> setText ("disconnected");
+//	connectedLabel	-> setText (" ");
+//	state		-> setText ("disconnected");
 }
 
 void	rtl_tcp_client::set_Offset	(int32_t o) {
@@ -357,13 +357,13 @@ void	rtl_tcp_client::set_Offset	(int32_t o) {
 }
 
 void	rtl_tcp_client::setAgc	(int state) {
-    if (checkAgc -> isChecked ())
+    //if (checkAgc -> isChecked ())
     {
         setGainMode(0);
     }
-    else
+    /*else
     {
         setGainMode(1);
         sendGain(tcp_gain->text().toInt());
-    }
+    }*/
 }

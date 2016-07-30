@@ -42,7 +42,7 @@
 #include	"ringbuffer.h"
 #include	"ui_rtl_tcp-widget.h"
 
-class	rtl_tcp_client: public virtualInput, Ui_rtl_tcp_widget {
+class	rtl_tcp_client: public virtualInput {
 Q_OBJECT
 public:
 			rtl_tcp_client (QSettings *, bool *);
@@ -88,6 +88,7 @@ private:
 	QHostAddress	serverAddress;
 	QTcpSocket	toServer;
 	qint64		basePort;
+    QString     ipAddress;
 };
 
 #endif
