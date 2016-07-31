@@ -96,9 +96,9 @@ int16_t	i;
 
 	dabstickSettings	= s;
 	*success		= false;	// just the default
-	this	-> myFrame	= new QFrame (NULL);
-	setupUi (this -> myFrame);
-    this	-> myFrame	-> show ();
+//	this	-> myFrame	= new QFrame (NULL);
+//	setupUi (this -> myFrame);
+//    this	-> myFrame	-> show ();
 	inputRate		= 2048000;
 	libraryLoaded		= false;
 	open			= false;
@@ -175,25 +175,27 @@ int16_t	i;
 
 	_I_Buffer		= new RingBuffer<uint8_t>(1024 * 1024);
 	dabstickSettings	-> beginGroup ("dabstickSettings");
-	externalGain	-> setMaximum (gainsCount);
-	externalGain -> setValue (dabstickSettings -> value ("externalGain", 10). toInt ());
-	f_correction -> setValue (dabstickSettings -> value ("f_correction", 0). toInt ());
-	KhzOffset	-> setValue (dabstickSettings -> value ("KhzOffset", 0). toInt ());
+//	externalGain	-> setMaximum (gainsCount);
+//	externalGain -> setValue (dabstickSettings -> value ("externalGain", 10). toInt ());
+//	f_correction -> setValue (dabstickSettings -> value ("f_correction", 0). toInt ());
+//	KhzOffset	-> setValue (dabstickSettings -> value ("KhzOffset", 0). toInt ());
 	dabstickSettings	-> endGroup ();
-	set_fCorrection	(f_correction -> value ());
-	setExternalGain (externalGain -> value ());
-	set_KhzOffset	(KhzOffset -> value ());
-	connect (externalGain, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
-	connect (f_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_fCorrection  (int)));
-	connect (KhzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_KhzOffset (int)));
-	connect (checkAgc, SIGNAL (stateChanged (int)),
-	         this, SLOT (setAgc (int)));
+//	set_fCorrection	(f_correction -> value ());
+//	setExternalGain (externalGain -> value ());
+//	set_KhzOffset	(KhzOffset -> value ());
+//	connect (externalGain, SIGNAL (valueChanged (int)),
+//	         this, SLOT (setExternalGain (int)));
+//	connect (f_correction, SIGNAL (valueChanged (int)),
+//	         this, SLOT (set_fCorrection  (int)));
+//	connect (KhzOffset, SIGNAL (valueChanged (int)),
+//	         this, SLOT (set_KhzOffset (int)));
+//	connect (checkAgc, SIGNAL (stateChanged (int)),
+//	         this, SLOT (setAgc (int)));
 
     // Switch on AGC by default
-    checkAgc->setChecked(true);
+//    checkAgc->setChecked(true);
+
+    setAgc();
 
 	*success 		= true;
 	return;
@@ -214,12 +216,12 @@ err:
 
 	dabStick::~dabStick	(void) {
 	dabstickSettings	-> beginGroup ("dabstickSettings");
-	dabstickSettings	-> setValue ("externalGain", 
-	                                      externalGain -> value ());
-	dabstickSettings	-> setValue ("f_correction",
-	                                      f_correction -> value ());
-	dabstickSettings	-> setValue ("KhzOffset",
-	                                      KhzOffset	-> value ());
+//	dabstickSettings	-> setValue ("externalGain",
+//	                                      externalGain -> value ());
+//	dabstickSettings	-> setValue ("f_correction",
+//	                                      f_correction -> value ());
+//	dabstickSettings	-> setValue ("KhzOffset",
+//	                                      KhzOffset	-> value ());
 	dabstickSettings	-> endGroup ();
 	if (workerHandle != NULL) { // we are running
 	   this -> rtlsdr_cancel_async (device);
@@ -243,7 +245,7 @@ err:
 	if (gains != NULL)
 	   delete[] gains;
 	open = false;
-	delete	myFrame;
+//	delete	myFrame;
 }
 
 void	dabStick::setVFOFrequency	(int32_t f) {
@@ -295,7 +297,7 @@ void	dabStick::setExternalGain	(int gain) {
 
     CurrentManualGain	= gain;
 	rtlsdr_set_tuner_gain (device, gains [gainsCount - gain]);
-    checkAgc->setChecked(false);
+//    checkAgc->setChecked(false);
 }
 //
 //	correction is in Hz
@@ -498,21 +500,21 @@ int16_t	dabStick::bitDepth	(void) {
 	return 8;
 }
 
-QFrame* dabStick::getFrame  (void) {
-    return this	-> myFrame;
-}
+//QFrame* dabStick::getFrame  (void) {
+//    return this	-> myFrame;
+//}
 
-void	dabStick::setAgc	(int state) {
-	if (checkAgc -> isChecked ())
-    {
+void	dabStick::setAgc	(void) {
+//	if (checkAgc -> isChecked ())
+//    {
        //(void)rtlsdr_set_agc_mode (device, 1);
         rtlsdr_set_tuner_gain_mode (device, 0);
-    }
-	else
-    {
-       //(void)rtlsdr_set_agc_mode (device, 0);
-        rtlsdr_set_tuner_gain_mode (device, 1);
-        rtlsdr_set_tuner_gain (device, gains [gainsCount - CurrentManualGain]);
-    }
+//    }
+//	else
+//    {
+//       //(void)rtlsdr_set_agc_mode (device, 0);
+//        rtlsdr_set_tuner_gain_mode (device, 1);
+//        rtlsdr_set_tuner_gain (device, gains [gainsCount - CurrentManualGain]);
+//    }
 }
 

@@ -68,7 +68,7 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read is as dll
 //	It does not do any processing
-class	dabStick: public virtualInput, public Ui_dabstickWidget_osmo {
+class	dabStick: public virtualInput{
 Q_OBJECT
 public:
 			dabStick	(QSettings *, bool *);
@@ -86,7 +86,6 @@ public:
 	void		resetBuffer	(void);
 	int16_t		maxGain		(void);
 	int16_t		bitDepth	(void);
-    QFrame*     getFrame    (void);
 //
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<uint8_t>	*_I_Buffer;
@@ -94,7 +93,6 @@ public:
 	struct rtlsdr_dev	*device;
 	int32_t		sampleCounter;
 private:
-	QFrame		*myFrame;
 	QSettings	*dabstickSettings;
 	dongleSelect	*dongleSelector;
 	int32_t		inputRate;
@@ -131,7 +129,7 @@ private slots:
 	void		setExternalGain		(int);
 	void		set_fCorrection		(int);
 	void		set_KhzOffset		(int);
-	void		setAgc			(int);
+    void		setAgc			(void);
 
 };
 #endif
