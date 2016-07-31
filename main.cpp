@@ -48,6 +48,8 @@ QString	homeDir;
 	}
 
 	homeDir = QDir::homePath ();
+    if(homeDir == "/")
+            homeDir = "/etc";
 	homeDir. append ("/");
 	homeDir. append (v);
 	homeDir	= QDir::toNativeSeparators (homeDir);
