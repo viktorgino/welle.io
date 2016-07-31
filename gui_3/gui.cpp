@@ -1214,7 +1214,6 @@ void	RadioInterface::scanChannelTimerTimeout(void)
         setStart ();
 
         // Reset the station list
-        //StationList.clear();
         stationList.reset();
 
         ScanChannelState = ScanTunetoChannel;
@@ -1231,7 +1230,7 @@ void	RadioInterface::scanChannelTimerTimeout(void)
             CurrentChannel = bandIII_frequencies [BandIIIChannelIt]. key;
             dabBand	= BAND_III;
             fprintf(stderr,"Scan channel: %s, %d kHz\n", bandIII_frequencies [BandIIIChannelIt]. key, bandIII_frequencies [BandIIIChannelIt].fKHz);
-            emit channelScanProgress(BandIIIChannelIt);
+            emit channelScanProgress(BandIIIChannelIt + 1);
 
             // Tune to channel
             set_channelSelect (CurrentChannel);

@@ -8,8 +8,6 @@ Item {
 
     property alias showChannelState : showChannel.checked
     property alias enableFullScreenState : enableFullScreen.checked
-    signal startChannelScan
-    signal stopChannelScan
 
     Connections{
         target: cppGUI
@@ -28,94 +26,111 @@ Item {
     }
 
     ColumnLayout {
-        spacing: u.dp(40)
         anchors.top: parent.top
-        anchors.topMargin: u.dp(20)
         anchors.horizontalCenter: parent.horizontalCenter
+        height: parent.height
 
-        Column{
-            spacing: u.dp(10)
+        ColumnLayout{
+            spacing: u.dp(30)
+
+            ColumnLayout{
+                spacing: u.dp(10)
+                RowLayout {
+                    spacing: u.dp(20)
+                    Text {
+                        font.pixelSize: u.em(1.3)
+                        Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                        color: "white"
+                        text: "Channel scan"
+                    }
+                    Button {
+                        id: startChannelScanButton
+                        text: "Start"
+                        style: touchStyle
+                        implicitWidth: u.dp(80)
+                        onClicked: {
+                            startChannelScanButton.enabled = false
+                            stopChannelScanButton.enabled = true
+                            mainWindow.startChannelScanClicked()
+                        }
+                    }
+                    Button {
+                        id: stopChannelScanButton
+                        text: "Stop"
+                        style: touchStyle
+                        implicitWidth: u.dp(80)
+                        enabled: false
+                        onClicked: {
+                            startChannelScanButton.enabled = true
+                            stopChannelScanButton.enabled = false
+                            mainWindow.stopChannelScanClicked()
+                        }
+                    }
+                }
+
+                ProgressBar{
+                    id: channelScanProgressBar
+                    style: progressBarStyle
+                    minimumValue: 0
+                    maximumValue: 38
+                    implicitWidth: parent.width
+                    Text {
+                        id: channelScanProgressBarText
+                        text: "Found channels: 0"
+                        font.pixelSize: u.em(1.2)
+                        color: "white"
+                        anchors.centerIn: parent
+                    }
+                }
+            }
+
             Row {
                 spacing: u.dp(20)
                 Text {
+                    //anchors.left: parent.left
+                    width: u.dp(212)
                     font.pixelSize: u.em(1.3)
                     Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                     color: "white"
-                    text: "Channel scan"
+                    text: "Show channel in station list"
                 }
-                Button {
-                    id: startChannelScanButton
-                    text: "Start"
-                    style: touchStyle
-                    implicitWidth: u.dp(80)
-                    onClicked: {
-                        startChannelScanButton.enabled = false
-                        stopChannelScanButton.enabled = true
-                        settingsPage.startChannelScan()
-                    }
-                }
-                Button {
-                    id: stopChannelScanButton
-                    text: "Stop"
-                    style: touchStyle
-                    implicitWidth: u.dp(80)
-                    enabled: false
-                    onClicked: {
-                        startChannelScanButton.enabled = true
-                        stopChannelScanButton.enabled = false
-                        settingsPage.stopChannelScan()
-                    }
+                Switch {
+                    //anchors.right: parent.right
+                    style: switchStyle
+                    id: showChannel
+                    objectName: "showChannel"
+                    checked: false
                 }
             }
 
-            ProgressBar{
-                id: channelScanProgressBar
-                style: progressBarStyle
-                minimumValue: 0
-                maximumValue: 38
-                implicitWidth: u.dp(305)
+            Row{
+                spacing: u.dp(20)
                 Text {
-                    id: channelScanProgressBarText
-                    text: "Found channels: 0"
-                    font.pixelSize: u.em(1.2)
+                    //anchors.left: parent.left
+                    width: u.dp(212)
+                    font.pixelSize: u.em(1.3)
+                    Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                     color: "white"
-                    anchors.centerIn: parent
+                    text: "Enable full screen mode"
+                }
+                Switch {
+                    //anchors.right: parent.right
+                    style: switchStyle
+                    id: enableFullScreen
+                    objectName: "enableFullScreen"
+                    checked: false
                 }
             }
         }
 
-        Row {
-            spacing: u.dp(20)
-            Text {
-                width: u.dp(210)
-                font.pixelSize: u.em(1.3)
-                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-                color: "white"
-                text: "Show channel in station list"
-            }
-            Switch {
-                style: switchStyle
-                id: showChannel
-                objectName: "showChannel"
-                checked: false
-            }
-        }
-
-        Row {
-            spacing: u.dp(20)
-            Text {
-                width: u.dp(210)
-                font.pixelSize: u.em(1.3)
-                Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-                color: "white"
-                text: "Enable full screen mode"
-            }
-            Switch {
-                style: switchStyle
-                id: enableFullScreen
-                objectName: "enableFullScreen"
-                checked: false
-            }
+        Button {
+            id: exitAppButton
+            text: "Exit dab-rpi"
+            style: touchStyle
+            implicitWidth: parent.width
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: u.dp(10)
+            onClicked:  mainWindow.exitApplicationClicked()
         }
 
         /*Slider {

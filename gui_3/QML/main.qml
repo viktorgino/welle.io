@@ -132,10 +132,10 @@ ApplicationWindow {
             anchors.rightMargin: u.dp(5)
             color: "white"
             text: "01.01.2016 00:00"
-            id: "dateTimeDisplay"
+            id: dateTimeDisplay
         }
 
-        Rectangle {
+        /*Rectangle {
             id: exitButton
             width: opacity ? u.dp(40) : 0
             anchors.right: parent.right
@@ -156,7 +156,7 @@ ApplicationWindow {
                 anchors.margins: u.dp(-20)
                 onClicked: stackView.depth > 1 ? mainWindow.exitApplicationClicked() : {}
             }
-        }
+        }*/
     }
 
     SplitView {
@@ -168,7 +168,7 @@ ApplicationWindow {
             clip: true
             //anchors.fill: parent
             width: u.dp(200)
-            Layout.minimumHeight: u.dp(200)
+            //Layout.minimumHeight: u.dp(200)
             Layout.fillWidth: true
             // Implements back key navigation
             focus: true
@@ -203,6 +203,7 @@ ApplicationWindow {
             orientation: Qt.Vertical
             width: u.dp(320)
             Layout.maximumWidth: u.dp(320)
+            Layout.minimumWidth: u.dp(320)
 
             // Radio
             RadioView {}
@@ -227,16 +228,6 @@ ApplicationWindow {
 
         onNewDateTime:{
             dateTimeDisplay.text = u.pad(Day,2) + "." + u.pad(Month,2) + "." + Year + " " + u.pad(Hour,2) + ":" + u.pad(Minute,2)
-        }
-    }
-
-    Connections{
-        target: settingsPageLoader.item
-        onStartChannelScan:  {
-            mainWindow.startChannelScanClicked()
-        }
-        onStopChannelScan: {
-            mainWindow.stopChannelScanClicked()
         }
     }
 }
