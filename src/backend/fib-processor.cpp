@@ -536,17 +536,19 @@ uint8_t		extensionFlag;
 //	Michael Hoehn
 void fib_processor::FIG0Extension9 (uint8_t *d) {
 int16_t	offset	= 16;
-
+    // Local hours offset from UTC
 	dateTime [6] = (getBits_1 (d, offset + 2) == 1)?
 	                -1 * getBits_4 (d, offset + 3):
 	                     getBits_4 (d, offset + 3);
+
+    // Local minute offset from UTC
 	dateTime [7] = (getBits_1 (d, offset + 7) == 1)? 30 : 0;
 }
 //
 void fib_processor::FIG0Extension10 (uint8_t *fig) {
 int16_t		offset = 16;
 int32_t		mjd	= getLBits (fig, offset + 1, 17);
-// Modified Julian Date umrechnen (Nach wikipedia)
+// Modified Julian date calculation (see wikipedia)
 int32_t J	= mjd + 2400001;
 int32_t j	= J + 32044;
 int32_t g	= j / 146097; 
@@ -564,22 +566,18 @@ int32_t Y	= y - 4800 + ((m + 2) / 12);
 int32_t M	= ((m + 2) % 12) + 1; 
 int32_t D	= d + 1;
 	
-	dateTime [0] = Y;	// Jahr
-	dateTime [1] = M;	// Monat
-	dateTime [2] = D;	// Tag
-	dateTime [3] = getBits_5 (fig, offset + 21);	// Stunden
+    dateTime [0] = Y;	// Year
+    dateTime [1] = M;	// Month
+    dateTime [2] = D;	// Day
+    dateTime [3] = getBits_5 (fig, offset + 21);	// Hour
 	if (getBits_6 (fig, offset + 26) != dateTime [4]) {
-	   dateTime [5] =  0;	// Sekunden (Uebergang abfangen)
+       dateTime [5] =  0;	// Reset seconds
 	}
-	dateTime [4] = getBits_6 (fig, offset + 26);	// Minuten
+    dateTime [4] = getBits_6 (fig, offset + 26);	// Minute
 	if (fig [offset + 20] == 1)
-	   dateTime [5]= getBits_6 (fig, offset + 32);	// Sekunden
+       dateTime [5]= getBits_6 (fig, offset + 32);	// Seconds
 
-//	fprintf (stderr, "%d %d %d %d %d %d\n",
-//	                  dateTime [0], dateTime [1], dateTime [2],
-//	                  dateTime [3], dateTime [4], dateTime [5]);
 	dateFlag	= true;
-    //fprintf(stderr, "%i:%i:%i  %i:%i:%i:%i:%i\n",dateTime [0], dateTime [1], dateTime [2], dateTime [3], dateTime [4], dateTime [5], dateTime [6], dateTime [7]);
     emit newDateTime(dateTime);
 }
 

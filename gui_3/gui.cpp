@@ -731,10 +731,13 @@ void    RadioInterface::displayDateTime (int32_t* DateTime) {
     int Day = DateTime[2];
     int Hour = DateTime[3];
     int Minute = DateTime[4];
+    //int Seconds  = DateTime[5];
+    int HourOffset = DateTime[6];
+    int MinuteOffset = DateTime[7];
 
     //fprintf(stderr, "%i:%i:%i  %i:%i\n",Year, Month, Day, Hour, Minute);
 
-    emit newDateTime(Year, Month, Day, Hour, Minute);
+    emit newDateTime(Year, Month, Day, Hour + HourOffset, Minute + MinuteOffset);
 #endif
 }
 
