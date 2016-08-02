@@ -167,70 +167,70 @@ int16_t	length	= 0;
 }
 
 
-void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
-static bool xpadActive = false;
-static QString xpadtext = QString ("");
-static int16_t segmentLength = 0;
+void	padHandler::dynamicLabel     (uint8_t *data, int16_t length, uint8_t CI) {
+//static bool xpadActive = false;
 static int16_t segmentno = 0;
-static int16_t clength	= 0;
-int16_t	i;
+//static int16_t clength	= 0;
 
 	if ((CI & 037) == 02) {	// start of segment
-	   if (xpadActive) {
-	      xpadtext. truncate (segmentLength + 1);
-	      addSegment (segmentno, xpadtext);
-	   }
-
-	   xpadtext 	= QString ("");
-	   xpadActive	= true;
+       //xpadActive	= true;
 	   uint16_t prefix = (data [0] << 8) | data [1];
 	   uint8_t field_1 = (prefix >> 8) & 017;
 	   uint8_t Cflag   = (prefix >> 12) & 01;
 	   uint8_t first   = (prefix >> 14) & 01;
 	   uint8_t last    = (prefix >> 13) & 01;
+
 	   if (first) { 
 	      segmentno = 1;
 	      charSet = (prefix >> 4) & 017;
+
+          // Clear label because a new label begins
+          dynamicLabelText.clear();
 	   }
-	   else 
-	      segmentno = (prefix >> 4) & 07;
-	   if (Cflag)
-	      dynamicLabelText = QString ("");
-	   else { 
-	      segmentLength = field_1;
-	      clength = length - 2;
+       else {
+           segmentno = ((prefix >> 4) & 07) + 1;
+       }
+
+       if (Cflag) // Special dynamic label command
+       {
+          //  The only specified command is to clear the display
+          dynamicLabelText.clear();
+       }
+       else // Dynamic text length
+       {
+           // Convert dynamic label
+           QString segmentText = toQStringUsingCharset (
+                                (const char *) &data [2],
+                                (CharacterSet) charSet,
+                                field_1+1);
+
+           dynamicLabelText.append(segmentText);
+
+           // The dynamic label transmissions end so show it
+           if(last)
+                showLabel (dynamicLabelText);
+
+          //clength = length - 2;
 	   }
-	   QString help = toQStringUsingCharset (
-	                        (const char *) &data [2],
-	                           (CharacterSet) charSet);
-	   xpadtext. append (help);
 	}
-	else
-	if (((CI & 037) == 03) && xpadActive) {	
-	   QString help = toQStringUsingCharset (
-	                        (const char *) data,
-	                           (CharacterSet) charSet);
-	   xpadtext. append (help);
-	   clength += length;
-	}
-	else
-	   xpadActive = false;
+    /*else
+        if (((CI & 037) == 03) && xpadActive) {
+            // Is this is correct?
+           clength += length;
+           QString segmentText = toQStringUsingCharset (
+                                (const char *) data,
+                                (CharacterSet) charSet,
+                                length);
+           dynamicLabelText.append(segmentText);
+        }
+        else
+           xpadActive = false;*/
 }
 
-void	padHandler::addSegment (uint16_t segmentno, QString s) {
-static int lastSegment = 0;
-	if (segmentno == 1)
-	   s. prepend (' ');
-	if (dynamicLabelText. length () + s. length () > 50)
-	   dynamicLabelText. remove (1, dynamicLabelText. length () + s. length () - 50);
-	dynamicLabelText. append (s);
-	showLabel (dynamicLabelText);
-	lastSegment = segmentno;
-}
 //
 //
 //	building an MSC segment by integrating the elements sent per XPAD
-//
+//last
 void	padHandler::add_MSC_element	(uint8_t *data, int16_t length) {
 int16_t	i;
 
