@@ -648,8 +648,9 @@ void	RadioInterface::setSynced	(char b) {
 //	the GUI may decide to ignore this
 void	RadioInterface::showLabel	(QString s) {
 #ifdef	GUI_3
-    /*if (running)
-       dynamicLabel	-> setText (s);*/
+    //fprintf(stderr,"Label: %s\n",s.toStdString().c_str());
+    emit stationText(""); // The horizontal text alignment is not working if the text is not reseted. Maybe this is a bug in QT
+    emit stationText(s);
 #endif
 }
 //

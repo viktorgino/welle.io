@@ -164,6 +164,7 @@ private slots:
 #endif
 signals:
     void currentStation(QString text);
+    void stationText(QString text);
     void signalFlag(bool active);
     void syncFlag(bool active);
     void ficFlag(bool active);

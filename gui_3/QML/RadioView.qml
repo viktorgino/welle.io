@@ -2,7 +2,7 @@ import QtQuick 2.2
 import QtQuick.Layouts 1.1
 
 Item{
-    height: u.dp(150)
+    height: u.dp(180)
     width: u.dp(320)
     Layout.minimumWidth: u.dp(150)
 
@@ -104,19 +104,40 @@ Item{
         }
     }
 
-    /* Station Text */
-    Text {
-        id: currentStation
+    ColumnLayout {
         anchors.centerIn: parent
-        text: "No Station"
-        color: "white"
-        font.pixelSize: u.em(2.3)
+
+        /* Station Name */
+        Text {
+            id: currentStation
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "No Station"
+            color: "white"
+            font.pixelSize: u.em(2.3)
+        }
+
+        /* Station Text */
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.margins: u.dp(10)
+            id: stationText
+            Layout.maximumWidth: parent.parent.width
+            width: parent.parent.width
+            wrapMode: Text.WordWrap
+            color: "white"
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: u.em(1.2)
+        }
     }
 
     Connections{
         target: cppGUI
         onCurrentStation:{
             currentStation.text = text
+        }
+
+        onStationText:{
+            stationText.text = text
         }
 
         onSignalFlag:{

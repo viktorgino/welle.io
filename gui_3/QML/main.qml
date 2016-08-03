@@ -52,7 +52,7 @@ ApplicationWindow {
     id: mainWindow
     visible: true
     width: u.dp(700)
-    height: u.dp(450)
+    height: u.dp(465)
     visibility: settingsPageLoader.settingsPage.enableFullScreenState ? "FullScreen" : "Windowed"
 
     Units {
@@ -210,11 +210,12 @@ ApplicationWindow {
 
             // MOT image
             Rectangle {
-                width: u.dp(320)
-                height: u.dp(280)
+                id: motImageRec
+                height: u.dp(240)
                 color: "#212126"
                 Image {
                     id: motImage
+                    //source: "file://"+workingDir+"03F0.jpg"
                 }
             }
         }
