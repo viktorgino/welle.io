@@ -202,7 +202,7 @@ ApplicationWindow {
         SplitView {
             orientation: Qt.Vertical
             width: u.dp(320)
-            Layout.maximumWidth: u.dp(320)
+            //Layout.maximumWidth: u.dp(320)
             Layout.minimumWidth: u.dp(320)
 
             // Radio
@@ -211,11 +211,13 @@ ApplicationWindow {
             // MOT image
             Rectangle {
                 id: motImageRec
-                height: u.dp(240)
+                //height: u.dp(240)
                 color: "#212126"
                 Image {
                     id: motImage
-                    //source: "file://"+ encodeURIComponent(workingDir) + "0BF2.jpg"
+                    source: "file://" + encodeURIComponent(workingDir) + "0BF2.jpg"
+                    width: parent.width
+                    height: parent.width * (sourceSize.height/sourceSize.width)
                 }
             }
         }
