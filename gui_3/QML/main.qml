@@ -215,7 +215,7 @@ ApplicationWindow {
                 color: "#212126"
                 Image {
                     id: motImage
-                    //source: "file://"+workingDir+"03F0.jpg"
+                    //source: "file://"+ encodeURIComponent(workingDir) + "0BF2.jpg"
                 }
             }
         }
@@ -224,7 +224,7 @@ ApplicationWindow {
     Connections{
         target: cppGUI
         onMotChanged:{
-            motImage.source = "file://" + workingDir + name
+            motImage.source = "file://" + encodeURIComponent(workingDir) + name
         }
 
         onNewDateTime:{
