@@ -184,11 +184,13 @@ int16_t	latency;
     QObject *rootObject = engine->rootObjects().first();
 
     // Restore windows properties
-    int WindowHeight = dabSettings	-> value ("WindowHeight", false).toInt();
-    rootObject->setProperty("height", WindowHeight);
+    int WindowHeight = dabSettings	-> value ("WindowHeight", 0).toInt();
+    if(WindowHeight)
+        rootObject->setProperty("height", WindowHeight);
 
-    int WindowWidth = dabSettings	-> value ("WindowWidth", false).toInt();
-    rootObject->setProperty("width", WindowWidth);
+    int WindowWidth = dabSettings	-> value ("WindowWidth", 0).toInt();
+    if(WindowWidth)
+        rootObject->setProperty("width", WindowWidth);
 
     // Restore the full screen property
     bool isFullscreen = dabSettings	-> value ("StartInFullScreen", false).toBool();
@@ -344,6 +346,7 @@ void	RadioInterface::setModeParameters (uint8_t Mode) {
         if(spectrum_buffer)
             free(spectrum_buffer);
         spectrum_buffer = (DSPCOMPLEX*) malloc(dabModeParameters.T_u * sizeof (DSPCOMPLEX));
+        memset(spectrum_buffer, 0, dabModeParameters.T_u * sizeof (DSPCOMPLEX));
     }
 }
 
