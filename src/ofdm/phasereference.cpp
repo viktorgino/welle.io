@@ -21,6 +21,10 @@
  */
 #include	"phasereference.h" 
 #include	"string.h"
+
+// Ugly hack to access the spectrum buffer
+extern DSPCOMPLEX	*spectrum_buffer;
+
 /**
   *	\class phaseReference
   *	Implements the correlation that is used to identify
@@ -90,6 +94,10 @@ float	sum		= 0;
 	for (i = 0; i < Tu; i ++) 
 	   res_buffer [i] = fft_buffer [i] * conj (refTable [i]);
 //	and, again, back into the time domain
+
+    // Copy data to spectrum buffer to save it to show it in a GUI later
+    memcpy(spectrum_buffer, fft_buffer, Tu * sizeof (DSPCOMPLEX));
+
 	res_processor	-> do_IFFT ();
 /**
   *	We compute the average signal value ...

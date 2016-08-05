@@ -36,6 +36,9 @@
 #include	<QTimer>
 #include    <QtQml/QQmlApplicationEngine>
 #include    <QQmlContext>
+#include    <QtCharts>
+
+using namespace QtCharts;
 #include    "stationlist.h"
 #endif
 #include	"ofdm-processor.h"
@@ -114,6 +117,8 @@ const	char		*get_programm_language_string (uint8_t);
     int         BandLChannelIt;
     tScanChannelState ScanChannelState;
     StationList stationList;
+    QVector<QPointF> spectrum_data;
+    int         coarseCorrector;
 #endif
 
 public slots:
@@ -137,6 +142,7 @@ public slots:
     void    setStereo		(bool isStereo);
     void    setSignalPresent (bool isSignal);
     void    displayDateTime (int32_t* DateTime);
+    void    updateSpectrum(QAbstractSeries *series);
 private slots:
 //
 //	Somehow, these must be connected to the GUI
@@ -179,6 +185,10 @@ signals:
     void channelScanProgress(int progress);
     void foundChannelCount(int channelCount);
     void newDateTime(int Year, int Month, int Day, int Hour, int Minute);
+    void maxYAxisChanged(qreal max);
+    void displayFreqCorr(int Freq);
+    void displayMSCErrors(int Errors);
+    void displayCurrentChannel(QString Channel, int Frequency);
 };
 
 #endif

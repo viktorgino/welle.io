@@ -167,9 +167,9 @@ ApplicationWindow {
             id: stackView
             clip: true
             //anchors.fill: parent
-            width: u.dp(200)
+            width: u.dp(350)
             //Layout.minimumHeight: u.dp(200)
-            Layout.fillWidth: true
+            //Layout.fillWidth: true
             // Implements back key navigation
             focus: true
             Keys.onReleased: if (event.key === Qt.Key_Back && stackView.depth > 1) {
@@ -202,8 +202,8 @@ ApplicationWindow {
         SplitView {
             orientation: Qt.Vertical
             width: u.dp(320)
-            //Layout.maximumWidth: u.dp(320)
             Layout.minimumWidth: u.dp(320)
+            Layout.fillWidth: settingsPageLoader.settingsPage.enableExpertModeState ? false : true
 
             // Radio
             RadioView {}
@@ -211,16 +211,21 @@ ApplicationWindow {
             // MOT image
             Rectangle {
                 id: motImageRec
-                //height: u.dp(240)
                 color: "#212126"
                 Image {
                     id: motImage
-                    source: "file://" + encodeURIComponent(workingDir) + "0BF2.jpg"
+                    //source: "file://" + encodeURIComponent(workingDir) + "0AEE.jpg"
                     width: parent.width
-                    height: parent.width * (sourceSize.height/sourceSize.width)
+                    height: parent.width * (sourceSize.height/sourceSize.width) // Scale MOT image with the correct aspect
                 }
             }
         }
+
+        ExpertView{
+            Layout.fillWidth: settingsPageLoader.settingsPage.enableExpertModeState ? true : false
+            visible: settingsPageLoader.settingsPage.enableExpertModeState ? true : false
+        }
+
     }
 
     Connections{

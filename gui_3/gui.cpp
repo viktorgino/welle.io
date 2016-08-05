@@ -52,6 +52,10 @@
 
 #define		BAND_III	0100
 #define		L_BAND		0101
+
+/* Warning ugly hack */
+DSPCOMPLEX	*spectrum_buffer = 0;
+
 /**
   *	We use the creation function merely to set up the
   *	user interface and make the connections between the
@@ -179,17 +183,30 @@ int16_t	latency;
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
 
-    // Set the full screen property
+    // Restore windows properties
+    int WindowHeight = dabSettings	-> value ("WindowHeight", false).toInt();
+    rootObject->setProperty("height", WindowHeight);
+
+    int WindowWidth = dabSettings	-> value ("WindowWidth", false).toInt();
+    rootObject->setProperty("width", WindowWidth);
+
+    // Restore the full screen property
     bool isFullscreen = dabSettings	-> value ("StartInFullScreen", false).toBool();
     QObject *enableFullScreenObject = rootObject->findChild<QObject*>("enableFullScreen");
     if(enableFullScreenObject)
         enableFullScreenObject->setProperty("checked", isFullscreen);
 
-    // Set the show channel names property
+    // Restore the show channel names property
     bool isShowChannelNames = dabSettings-> value ("ShowChannelNames", false).toBool();
     QObject *showChannelObject = rootObject->findChild<QObject*>("showChannel");
     if(showChannelObject)
         showChannelObject->setProperty("checked", isShowChannelNames);
+
+    // Restore expert mode
+    bool isExpertMode = dabSettings-> value ("EnableExpertMode", false).toBool();
+    QObject *expertModeObject = rootObject->findChild<QObject*>("enableExpertMode");
+    if(expertModeObject)
+        expertModeObject->setProperty("checked", isExpertMode);
 
     // Connect signals
     connect(rootObject, SIGNAL(stationClicked(QString,QString)),this, SLOT(channelClick(QString,QString)));
@@ -239,6 +256,13 @@ void	RadioInterface::dumpControlState (QSettings *s) {
     // Take the root object
     QObject *rootObject = engine->rootObjects().first();
 
+    // Save the windows properties
+    int WindowWidth = rootObject->property("width").toInt();
+    s->setValue("WindowWidth", WindowWidth);
+
+    int WindowHeight = rootObject->property("height").toInt();
+    s->setValue("WindowHeight", WindowHeight);
+
     // Access the full screen mode switch
     QObject *enableFullScreenObject = rootObject->findChild<QObject*>("enableFullScreen");
     if(enableFullScreenObject)
@@ -256,10 +280,21 @@ void	RadioInterface::dumpControlState (QSettings *s) {
         // Save the setting
         s->setValue("ShowChannelNames", isShowChannel);
     }
+
+    // Access to the enable expert mode switch
+    QObject *expertModeObject = rootObject->findChild<QObject*>("enableExpertMode");
+    if(expertModeObject)
+    {
+        bool isExpertMode = expertModeObject->property("checked").toBool();
+        // Save the setting
+        s->setValue("EnableExpertMode", isExpertMode);
+    }
 }
 //
 ///	the values for the different Modes:
 void	RadioInterface::setModeParameters (uint8_t Mode) {
+    int16_t old_Tu = dabModeParameters. T_u;
+
 	if (Mode == 2) {
 	   dabModeParameters. dabMode	= 2;
 	   dabModeParameters. L		= 76;		// blocks per frame
@@ -303,6 +338,13 @@ void	RadioInterface::setModeParameters (uint8_t Mode) {
 	   dabModeParameters. guardLength	= 504;
 	   dabModeParameters. carrierDiff	= 1000;
 	}
+
+    if(old_Tu != dabModeParameters. T_u)
+    {
+        if(spectrum_buffer)
+            free(spectrum_buffer);
+        spectrum_buffer = (DSPCOMPLEX*) malloc(dabModeParameters.T_u * sizeof (DSPCOMPLEX));
+    }
 }
 
 struct dabFrequencies {
@@ -537,14 +579,14 @@ void	RadioInterface::init_your_gui (void) {
 //	a slot called by the ofdmprocessor
 void	RadioInterface::set_fineCorrectorDisplay (int v) {
 #ifdef	GUI_3
-    //finecorrectorDisplay	-> display (v);
+    emit displayFreqCorr(coarseCorrector + v);
 #endif
 }
 
 //	a slot called by the ofdmprocessor
 void	RadioInterface::set_coarseCorrectorDisplay (int v) {
 #ifdef	GUI_3
-    //coarsecorrectorDisplay	-> display (v);
+    coarseCorrector = v * 1000;
 #endif
 }
 /**
@@ -694,6 +736,7 @@ void	RadioInterface::newAudio	(int rate) {
 //	might decide to ignore the data sent
 void	RadioInterface::show_mscErrors	(int er) {
 #ifdef	GUI_3
+    emit displayMSCErrors(er);
     /*crcErrors_1	-> display (er);
 	if (crcErrors_File != 0) 
 	   fprintf (crcErrors_File, "%d %% of MSC packets passed crc test\n",
@@ -855,6 +898,8 @@ int32_t	tunedFrequency;
 	   my_ofdmProcessor	-> reset ();
 	   running	 = true;
 	}
+
+    emit displayCurrentChannel(s, tunedFrequency);
 }
 
 #ifdef	GUI_3
@@ -1355,6 +1400,51 @@ void RadioInterface::saveSettings(void)
 {
     // Save settings
     dumpControlState(dabSettings);
+}
+
+void RadioInterface::updateSpectrum(QAbstractSeries *series) // This function is called by the QML GUI
+{
+    // TODO: At the moment the spectrum_buffer is not thread safe.
+    //       It can happens that new data and old data can be mixed.
+    //       Because it is only for visualisation it's not a big deal
+
+    if (series) {
+        QXYSeries *xySeries = static_cast<QXYSeries *>(series);
+
+        // Delete old data
+        spectrum_data.clear();
+
+        qreal x(0);
+        qreal y(0);
+        qreal y_max(0);
+
+        // Process samples one by one
+        for(int i=0; i<dabModeParameters.T_u; i++)
+        {
+            int half_Tu = dabModeParameters.T_u / 2;
+
+            // Shift FFT samples
+            if(i < half_Tu)
+                y = abs(spectrum_buffer[i + half_Tu]);
+            else
+                y = abs(spectrum_buffer[i - half_Tu]);
+
+            // Find maximum value to scale the plotter
+            if(y > y_max)
+                y_max = y;
+
+            x = i;
+            spectrum_data.append(QPointF(x, y));
+        }
+
+        // Set maximum of y-axis
+        y_max = round(y_max) + 1;
+        if(y_max > 0.0001)
+            emit maxYAxisChanged(y_max);
+
+        // Set new data
+        xySeries->replace(spectrum_data);
+    }
 }
 
 #endif

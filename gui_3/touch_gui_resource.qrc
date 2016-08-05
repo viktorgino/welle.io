@@ -15,5 +15,7 @@
         <file>QML/images/toolbar.png</file>
         <file>QML/Units.qml</file>
         <file>QML/images/icon-exit.png</file>
+        <file>QML/SpectrumView.qml</file>
+        <file>QML/ExpertView.qml</file>
     </qresource>
 </RCC>

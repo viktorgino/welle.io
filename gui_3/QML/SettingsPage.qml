@@ -8,6 +8,7 @@ Item {
 
     property alias showChannelState : showChannel.checked
     property alias enableFullScreenState : enableFullScreen.checked
+    property alias enableExpertModeState : enableExpertMode.checked
 
     Connections{
         target: cppGUI
@@ -87,7 +88,6 @@ Item {
             Row {
                 spacing: u.dp(20)
                 Text {
-                    //anchors.left: parent.left
                     width: u.dp(212)
                     font.pixelSize: u.em(1.3)
                     Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
@@ -95,7 +95,6 @@ Item {
                     text: "Show channel in station list"
                 }
                 Switch {
-                    //anchors.right: parent.right
                     style: switchStyle
                     id: showChannel
                     objectName: "showChannel"
@@ -106,7 +105,6 @@ Item {
             Row{
                 spacing: u.dp(20)
                 Text {
-                    //anchors.left: parent.left
                     width: u.dp(212)
                     font.pixelSize: u.em(1.3)
                     Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
@@ -114,10 +112,26 @@ Item {
                     text: "Enable full screen mode"
                 }
                 Switch {
-                    //anchors.right: parent.right
                     style: switchStyle
                     id: enableFullScreen
                     objectName: "enableFullScreen"
+                    checked: false
+                }
+            }
+
+            Row{
+                spacing: u.dp(20)
+                Text {
+                    width: u.dp(212)
+                    font.pixelSize: u.em(1.3)
+                    Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
+                    color: "white"
+                    text: "Enable expert mode"
+                }
+                Switch {
+                    style: switchStyle
+                    id: enableExpertMode
+                    objectName: "enableExpertMode"
                     checked: false
                 }
             }
