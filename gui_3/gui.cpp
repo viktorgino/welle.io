@@ -646,7 +646,7 @@ QString s;
   */
 void	RadioInterface::show_successRate (int s) {
 #ifdef	GUI_3
-    //errorDisplay	-> display (s);
+    emit displaySuccessRate(s);
 #endif
 }
 
@@ -1403,6 +1403,11 @@ void RadioInterface::saveSettings(void)
 {
     // Save settings
     dumpControlState(dabSettings);
+}
+
+void RadioInterface::showCorrectedErrors(int Errors)
+{
+    emit displayCorrectedErrors(Errors);
 }
 
 void RadioInterface::updateSpectrum(QAbstractSeries *series) // This function is called by the QML GUI

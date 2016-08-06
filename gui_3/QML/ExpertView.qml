@@ -35,8 +35,13 @@ Item {
         }
 
         TextExpert {
-            id: displayMSCErrors
-            name: "MSC errors:"
+            id: displayCorrectedErrors
+            name: "Corrected errors:"
+        }
+
+        TextExpert {
+            id: displaySuccessRate
+            name: "Frame success rate:"
         }
 
         SpectrumView {
@@ -61,8 +66,12 @@ Item {
             displayFreqCorr.text = Freq + " Hz"
         }
 
-        onDisplayMSCErrors:{
-            displayMSCErrors.text = Errors
+        onDisplayCorrectedErrors:{
+            displayCorrectedErrors.text = Errors
+        }
+
+        onDisplaySuccessRate:{
+            displaySuccessRate.text = Rate + " %"
         }
     }
 }

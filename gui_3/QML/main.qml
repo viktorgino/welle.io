@@ -226,7 +226,7 @@ ApplicationWindow {
         }
 
         onNewDateTime:{
-            dateTimeDisplay.text = u.pad(Day,2) + "." + u.pad(Month,2) + "." + Year + " " + u.pad(Hour,2) + ":" + u.pad(Minute,2)
+            dateTimeDisplay.text = Units.pad(Day,2) + "." + Units.pad(Month,2) + "." + Year + " " + Units.pad(Hour,2) + ":" + Units.pad(Minute,2)
         }
     }
 }

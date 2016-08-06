@@ -79,6 +79,8 @@ uint16_t	genpoly		= 0x1021;
 	         mr, SLOT (showLabel (QString)));
     connect (this, SIGNAL (isStereo (bool)),
              mr, SLOT (setStereo (bool)));
+    connect (this, SIGNAL (showCorrectedErrors (int)),
+             mr, SLOT (showCorrectedErrors (int)));
 	this	-> bitRate	= bitRate;	// input rate
 
 	superFramesize		= 110 * (bitRate / 8);
@@ -202,6 +204,8 @@ int32_t		tmp;
 	   for (k = 0; k < 110; k ++) 
 	      outVector [j + k * RSDims] = rsOut [k];
 	}
+
+    emit showCorrectedErrors(nErrors);
 
 //	bits 0 .. 15 is firecode
 //	bit 16 is unused

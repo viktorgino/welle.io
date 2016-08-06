@@ -167,6 +167,7 @@ private slots:
     void    stopChannelScanClick(void);
     void    scanChannelTimerTimeout(void);
     void    saveSettings(void);
+    void    showCorrectedErrors (int);
 #endif
 signals:
     void currentStation(QString text);
@@ -189,6 +190,8 @@ signals:
     void displayFreqCorr(int Freq);
     void displayMSCErrors(int Errors);
     void displayCurrentChannel(QString Channel, int Frequency);
+    void displayCorrectedErrors(int Errors);
+    void displaySuccessRate(int Rate);
 };
 
 #endif
