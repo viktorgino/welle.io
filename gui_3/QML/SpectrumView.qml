@@ -1,6 +1,9 @@
 import QtQuick 2.0
 import QtCharts 2.1
 
+// Import custom styles
+import "style"
+
 ChartView {
     id: spectrumView
     animationOptions: ChartView.NoAnimation

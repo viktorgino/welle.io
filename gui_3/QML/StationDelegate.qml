@@ -40,10 +40,13 @@
 
 import QtQuick 2.2
 
+// Import custom styles
+import "style"
+
 Item {
     id: root
     width: parent.width
-    height: u.dp(44)
+    height: Units.dp(44)
 
     property alias stationNameText: stationItem.text
     property alias channelNameText: channelItem.text
@@ -56,31 +59,27 @@ Item {
         visible: mouse.pressed
     }
 
-    Text {
+    TextStandart {
         id: stationItem
-        color: "white"
-        font.pixelSize: u.em(1.3)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: u.dp(15)
+        anchors.leftMargin: Units.dp(15)
     }
 
-    Text {
+    TextStation {
         id: channelItem
-        color: "white"
-        font.pixelSize: u.em(0.9)
         text: modelData
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
-        anchors.rightMargin: u.dp(15)
+        anchors.rightMargin: Units.dp(15)
         opacity: root.ListView.view.showChannelState ? 1 : 0
     }
 
     Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.margins: u.dp(7)
+        anchors.margins: Units.dp(7)
         height: 1
         color: "#424246"
     }

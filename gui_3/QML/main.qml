@@ -42,6 +42,9 @@ import QtQuick 2.2
 import QtQuick.Controls 1.2
 import QtQuick.Layouts 1.1
 
+// Import custom styles
+import "style"
+
 ApplicationWindow {
     signal stationClicked(string statio, string channel)
     signal startChannelScanClicked
@@ -51,17 +54,13 @@ ApplicationWindow {
 
     id: mainWindow
     visible: true
-    width: u.dp(700)
-    height: u.dp(465)
+    width: Units.dp(700)
+    height: Units.dp(465)
     visibility: settingsPageLoader.settingsPage.enableFullScreenState ? "FullScreen" : "Windowed"
-
-    Units {
-         id: u
-     }
 
     Loader {
         id: settingsPageLoader
-        anchors.topMargin: u.dp(10)
+        anchors.topMargin: Units.dp(10)
         readonly property SettingsPage settingsPage: item
         source: Qt.resolvedUrl("SettingsPage.qml")
     }
@@ -77,32 +76,32 @@ ApplicationWindow {
     }
 
     toolBar: BorderImage {
-        border.bottom: u.dp(10)
+        border.bottom: Units.dp(10)
         source: "images/toolbar.png"
         width: parent.width
-        height: u.dp(40)
+        height: Units.dp(40)
 
         Rectangle {
             id: backButton
-            width: opacity ? u.dp(60) : 0
+            width: opacity ? Units.dp(60) : 0
             anchors.left: parent.left
-            anchors.leftMargin: u.dp(20)
+            anchors.leftMargin: Units.dp(20)
             anchors.verticalCenter: parent.verticalCenter
             antialiasing: true
-            radius: u.dp(4)
+            radius: Units.dp(4)
             color: backmouse.pressed ? "#222" : "transparent"
             Behavior on opacity { NumberAnimation{} }
             Image {
                 anchors.verticalCenter: parent.verticalCenter
                 source: stackView.depth > 1 ? "images/navigation_previous_item.png" : "images/icon-settings.png"
-                height: stackView.depth > 1 ? u.dp(20) : u.dp(23)
+                height: stackView.depth > 1 ? Units.dp(20) : Units.dp(23)
                 fillMode: Image.PreserveAspectFit
             }
             MouseArea {
                 id: backmouse
                 scale: 1
                 anchors.fill: parent
-                anchors.margins: u.dp(-20)
+                anchors.margins: Units.dp(-20)
                 onClicked: {
                     if(stackView.depth > 1) {
                         stackView.pop();
@@ -114,46 +113,41 @@ ApplicationWindow {
             }
         }
 
-        Text {
-            font.pixelSize: u.em(2)
+        TextTitle {
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            x: backButton.x + backButton.width + u.dp(20)
+            x: backButton.x + backButton.width + Units.dp(20)
             anchors.verticalCenter: parent.verticalCenter
-            color: "white"
             text: "dab-rpi"
         }
 
-        Text {
-            font.pixelSize: u.em(1.3)
+        TextStandart {
             Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
-            //x: exitButton.x - exitButton.width - u.dp(20)
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: u.dp(5)
-            color: "white"
+            anchors.rightMargin: Units.dp(5)
             text: "01.01.2016 00:00"
             id: dateTimeDisplay
         }
 
         /*Rectangle {
             id: exitButton
-            width: opacity ? u.dp(40) : 0
+            width: opacity ? Units.dp(40) : 0
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             antialiasing: true
-            radius: u.dp(4)
+            radius: Units.dp(4)
             color: backmouse.pressed ? "#222" : "transparent"
             Image {
                 anchors.verticalCenter: parent.verticalCenter
                 source: stackView.depth > 1 ? "images/icon-exit.png" : ""
-                height: u.dp(23)
+                height: Units.dp(23)
                 fillMode: Image.PreserveAspectFit
             }
             MouseArea {
                 id: exitmouse
                 scale: 1
                 anchors.fill: parent
-                anchors.margins: u.dp(-20)
+                anchors.margins: Units.dp(-20)
                 onClicked: stackView.depth > 1 ? mainWindow.exitApplicationClicked() : {}
             }
         }*/
@@ -166,10 +160,8 @@ ApplicationWindow {
         StackView {
             id: stackView
             clip: true
-            //anchors.fill: parent
-            width: u.dp(350)
-            //Layout.minimumHeight: u.dp(200)
-            //Layout.fillWidth: true
+            width: Units.dp(350)
+
             // Implements back key navigation
             focus: true
             Keys.onReleased: if (event.key === Qt.Key_Back && stackView.depth > 1) {
@@ -182,7 +174,6 @@ ApplicationWindow {
                 height: parent.height
                 ListView {
                     property bool showChannelState: settingsPageLoader.settingsPage.showChannelState
-                    //property bool showChannelState: false
                     anchors.rightMargin: 0
                     anchors.bottomMargin: 0
                     anchors.leftMargin: 0
@@ -201,8 +192,8 @@ ApplicationWindow {
 
         SplitView {
             orientation: Qt.Vertical
-            width: u.dp(320)
-            Layout.minimumWidth: u.dp(320)
+            width: Units.dp(320)
+            Layout.minimumWidth: Units.dp(320)
             Layout.fillWidth: settingsPageLoader.settingsPage.enableExpertModeState ? false : true
 
             // Radio

@@ -1,14 +1,17 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 
+// Import custom styles
+import "style"
+
 Item{
-    height: u.dp(180)
-    width: u.dp(320)
-    Layout.minimumWidth: u.dp(150)
+    height: Units.dp(180)
+    width: Units.dp(320)
+    Layout.minimumWidth: Units.dp(150)
 
     RowLayout{
         anchors.top: parent.top
-        anchors.topMargin: u.dp(5)
+        anchors.topMargin: Units.dp(5)
         Layout.fillWidth : true
         Layout.fillHeight: true
         width: parent.width
@@ -17,61 +20,55 @@ Item{
             Layout.fillWidth : true
             Layout.fillHeight: true
             anchors.left: parent.left
-            anchors.leftMargin: u.dp(5)
-            spacing: u.dp(2)
+            anchors.leftMargin: Units.dp(5)
+            spacing: Units.dp(2)
 
             Rectangle{
                 id: signalBar1
-                height: u.dp(4)
-                width: u.dp(4)
+                height: Units.dp(4)
+                width: Units.dp(4)
                 color: "grey"
             }
             Rectangle{
                 id: signalBar2
-                height: u.dp(8)
-                width: u.dp(4)
+                height: Units.dp(8)
+                width: Units.dp(4)
                 color: "grey"
             }
             Rectangle{
                 id: signalBar3
-                height: u.dp(12)
-                width: u.dp(4)
+                height: Units.dp(12)
+                width: Units.dp(4)
                 color: "grey"
             }
             Rectangle{
                 id: signalBar4
-                height: u.dp(16)
-                width: u.dp(4)
+                height: Units.dp(16)
+                width: Units.dp(4)
                 color: "grey"
             }
 
             Rectangle{
                 id: signalBar5
-                height: u.dp(20)
-                width: u.dp(4)
+                height: Units.dp(20)
+                width: Units.dp(4)
                 color: "grey"
             }
         }
 
-        Text {
+        TextRadioInfo {
             id: bitrateText
             text: "96 kbps"
-            color: "white"
-            font.pixelSize: u.em(1.2)
         }
 
-        Text {
+        TextRadioInfo {
             id: dabTypeText
             text: "DAB+"
-            color: "white"
-            font.pixelSize: u.em(1.2)
         }
 
-        Text {
+        TextRadioInfo {
             id: audioTypeText
             text: "Stereo"
-            color: "white"
-            font.pixelSize: u.em(1.2)
         }
 
         /* Flags */
@@ -80,25 +77,25 @@ Item{
             Layout.fillWidth : true
             Layout.fillHeight: true
             anchors.right: parent.right
-            anchors.rightMargin: u.dp(5)
+            anchors.rightMargin: Units.dp(5)
             spacing: 2
 
             Rectangle{
                 id: signal
-                height: u.dp(16)
-                width: u.dp(16)
+                height: Units.dp(16)
+                width: Units.dp(16)
                 color: "red"
             }
             Rectangle{
                 id: sync
-                height: u.dp(16)
-                width: u.dp(16)
+                height: Units.dp(16)
+                width: Units.dp(16)
                 color: "red"
             }
             Rectangle{
                 id: fic
-                height: u.dp(16)
-                width: u.dp(16)
+                height: Units.dp(16)
+                width: Units.dp(16)
                 color: "red"
             }
         }
@@ -108,25 +105,21 @@ Item{
         anchors.centerIn: parent
 
         /* Station Name */
-        Text {
+        TextRadioStation {
             id: currentStation
             anchors.horizontalCenter: parent.horizontalCenter
             text: "No Station"
-            color: "white"
-            font.pixelSize: u.em(2.3)
         }
 
         /* Station Text */
-        Text {
+        TextRadioInfo {
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.margins: u.dp(10)
+            anchors.margins: Units.dp(10)
             id: stationText
             Layout.maximumWidth: parent.parent.width
             width: parent.parent.width
             wrapMode: Text.WordWrap
-            color: "white"
             horizontalAlignment: Text.AlignHCenter
-            font.pixelSize: u.em(1.2)
         }
     }
 
@@ -195,27 +188,23 @@ Item{
 
     RowLayout{
         anchors.bottom: parent.bottom
-        anchors.bottomMargin: u.dp(5)
+        anchors.bottomMargin: Units.dp(5)
         Layout.fillWidth : true
         Layout.fillHeight: true
         width: parent.width
 
-        Text {
+        TextRadioInfo {
             id: languageTypeText
             anchors.left: parent.left
-            anchors.leftMargin: u.dp(5)
+            anchors.leftMargin: Units.dp(5)
             text: "German"
-            color: "white"
-            font.pixelSize: u.em(1.2)
         }
 
-        Text {
+        TextRadioInfo {
             id: stationTypeText
             anchors.right: parent.right
-            anchors.rightMargin: u.dp(5)
+            anchors.rightMargin: Units.dp(5)
             text: "Information"
-            color: "white"
-            font.pixelSize: u.em(1.2)
         }
 
     }

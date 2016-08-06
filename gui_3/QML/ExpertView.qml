@@ -1,9 +1,12 @@
 import QtQuick 2.2
 import QtQuick.Layouts 1.1
 
+// Import custom styles
+import "style"
+
 Item {
-    width: u.dp(400)
-    height: u.dp(400)
+    width: Units.dp(400)
+    height: Units.dp(400)
     Layout.fillWidth: true
     Layout.fillHeight: true
 
@@ -13,62 +16,30 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
 
-        anchors.topMargin: u.dp(5)
-        anchors.leftMargin: u.dp(5)
+        anchors.topMargin: Units.dp(5)
+        anchors.leftMargin: Units.dp(5)
 
-        RowLayout{
-            Text{
-                text: "Current channel:"
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
-            Text{
-                id: displayCurrentChannel
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
+        TextExpert {
+            id: displayCurrentChannel
+            name: "Current channel:"
         }
 
-        RowLayout{
-            Text{
-                text: "Frequency correction:"
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
-            Text{
-                id: displayFreqCorr
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
+        TextExpert {
+            id: displayFreqCorr
+            name: "Frequency correction:"
         }
 
-        RowLayout{
-            Text{
-                text: "SNR:"
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
-            Text{
-                id: displaySNR
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
+        TextExpert {
+            id: displaySNR
+            name: "SNR:"
         }
 
-        RowLayout{
-            Text{
-                text: "MSC errors:"
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
-            Text{
-                id: displayMSCErrors
-                font.pixelSize: u.em(1.3)
-                color: "white"
-            }
+        TextExpert {
+            id: displayMSCErrors
+            name: "MSC errors:"
         }
 
-        SpectrumView{
+        SpectrumView {
             width: parent.width
             Layout.fillWidth: true
             Layout.fillHeight: true
