@@ -147,10 +147,7 @@ int16_t	length	= 0;
 	   data [length] = 0;
 
 	   if ((appType == 02) || (appType == 03)) {
-          //fprintf(stderr, "length: %d, ind: %d, appType: %d\n", length, ind, appType);
-          //fprintf(stderr, "1 length: %d, ind: %d\n", length, ind);
 	      dynamicLabel (data, length, CI_table [i]);
-          //fprintf(stderr, "2 length: %d, ind: %d\n", length, ind);
 	   }
 	   else
 	   if ((appType == 12) && (last_appType == 01)) {
@@ -223,8 +220,6 @@ static bool moreXPad = false;
                                 (CharacterSet) charSet,
                                 dataLength);
 
-           //fprintf(stderr, "field_1: %d, string: %s\n", field_1, segmentText.toStdString().c_str());
-           //fprintf(stderr, "1: dataLength: %d, field_1_ %d, string: %s\n", dataLength, totalDataLength, segmentText.toStdString().c_str());
            dynamicLabelText.append(segmentText);
 
            // The dynamic label transmissions end so show it
@@ -261,8 +256,6 @@ static bool moreXPad = false;
                                 (const char *) data,
                                 (CharacterSet) charSet,
                                 dataLength);
-           //fprintf(stderr, "2: remainDataLength: %d, string: %s\n", remainDataLength, data);
-           //fprintf(stderr, "2: remainDataLength: %d, length: %d, dataLength: %d, string: %s\n", remainDataLength, length, dataLength, segmentText.toStdString().c_str());
            dynamicLabelText.append(segmentText);
 
            if(!moreXPad && isLastSegment)

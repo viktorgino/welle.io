@@ -196,6 +196,9 @@ ApplicationWindow {
             Layout.minimumWidth: Units.dp(320)
             Layout.fillWidth: settingsPageLoader.settingsPage.enableExpertModeState ? false : true
 
+            // Disable this view if expert view is enabled and no more space is available
+            visible: (mainWindow.width < Units.dp(850) && settingsPageLoader.settingsPage.enableExpertModeState) ? false : true
+
             // Radio
             RadioView {}
 

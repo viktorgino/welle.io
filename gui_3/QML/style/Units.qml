@@ -13,7 +13,8 @@ QtObject {
     }
 
     function em( x ) {
-        return Math.round( x * TextSingleton.font.pixelSize );
+        //return Math.round( x * TextSingleton.font.pixelSize );
+        return Math.round( x * Settings.dpiScaleFactor * 12 ); // Scale the font to a pixel size of 12 pixels
     }
 
     function pad(n, width, z) {
@@ -21,4 +22,8 @@ QtObject {
       n = n + '';
       return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
+
+    Component.onCompleted: {
+          console.log("GUI dpiScaleFactor: " + Settings.dpiScaleFactor)
+       }
 }
