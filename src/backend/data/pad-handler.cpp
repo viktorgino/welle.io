@@ -138,14 +138,19 @@ int16_t	length	= 0;
 	      return;	// sorry, we do not handle this
 	   }
 
+
 	   uint8_t *data = (uint8_t *)alloca (length + 1);
+       memset(data, 0, length + 1);
 	   for (j = 0; j < length; j ++)  {
 	      data [j] = b [base - j];
 	   }
 	   data [length] = 0;
 
 	   if ((appType == 02) || (appType == 03)) {
+          //fprintf(stderr, "length: %d, ind: %d, appType: %d\n", length, ind, appType);
+          //fprintf(stderr, "1 length: %d, ind: %d\n", length, ind);
 	      dynamicLabel (data, length, CI_table [i]);
+          //fprintf(stderr, "2 length: %d, ind: %d\n", length, ind);
 	   }
 	   else
 	   if ((appType == 12) && (last_appType == 01)) {
@@ -168,17 +173,19 @@ int16_t	length	= 0;
 
 
 void	padHandler::dynamicLabel     (uint8_t *data, int16_t length, uint8_t CI) {
-//static bool xpadActive = false;
 static int16_t segmentno = 0;
-//static int16_t clength	= 0;
+static int16_t remainDataLength = 0;
+int16_t dataLength = 0;
+static bool isLastSegment = false;
+static bool moreXPad = false;
 
 	if ((CI & 037) == 02) {	// start of segment
-       //xpadActive	= true;
 	   uint16_t prefix = (data [0] << 8) | data [1];
 	   uint8_t field_1 = (prefix >> 8) & 017;
 	   uint8_t Cflag   = (prefix >> 12) & 01;
 	   uint8_t first   = (prefix >> 14) & 01;
 	   uint8_t last    = (prefix >> 13) & 01;
+       dataLength = length - 2; // The length is with removed header
 
 	   if (first) { 
 	      segmentno = 1;
@@ -198,33 +205,69 @@ static int16_t segmentno = 0;
        }
        else // Dynamic text length
        {
+           int16_t totalDataLength = field_1 + 1;
+           if(length - 2 < totalDataLength)
+           {
+               dataLength = length - 2; // The length is with removed header
+               moreXPad = true;
+           }
+           else
+           {
+               dataLength = totalDataLength; // No more xpad application 3
+               moreXPad = false;
+           }
+
            // Convert dynamic label
            QString segmentText = toQStringUsingCharset (
                                 (const char *) &data [2],
                                 (CharacterSet) charSet,
-                                field_1+1);
+                                dataLength);
 
+           //fprintf(stderr, "field_1: %d, string: %s\n", field_1, segmentText.toStdString().c_str());
+           //fprintf(stderr, "1: dataLength: %d, field_1_ %d, string: %s\n", dataLength, totalDataLength, segmentText.toStdString().c_str());
            dynamicLabelText.append(segmentText);
 
            // The dynamic label transmissions end so show it
            if(last)
-                showLabel (dynamicLabelText);
+           {
+               if(!moreXPad)
+                   showLabel (dynamicLabelText);
+               else
 
-          //clength = length - 2;
+               isLastSegment = true;
+           }
+           else
+               isLastSegment = false;
+
+           // Calc remaining data length
+           remainDataLength = totalDataLength - dataLength; // field 1 holds the total data length
 	   }
 	}
-    /*else
-        if (((CI & 037) == 03) && xpadActive) {
-            // Is this is correct?
-           clength += length;
+    else
+        if (((CI & 037) == 03) && moreXPad) {
+
+           if(remainDataLength > length)
+           {
+               dataLength = length;
+               remainDataLength -= length;
+           }
+           else
+           {
+               dataLength = remainDataLength;
+               moreXPad = false;
+           }
+
            QString segmentText = toQStringUsingCharset (
                                 (const char *) data,
                                 (CharacterSet) charSet,
-                                length);
+                                dataLength);
+           //fprintf(stderr, "2: remainDataLength: %d, string: %s\n", remainDataLength, data);
+           //fprintf(stderr, "2: remainDataLength: %d, length: %d, dataLength: %d, string: %s\n", remainDataLength, length, dataLength, segmentText.toStdString().c_str());
            dynamicLabelText.append(segmentText);
+
+           if(!moreXPad && isLastSegment)
+               showLabel (dynamicLabelText);
         }
-        else
-           xpadActive = false;*/
 }
 
 //
