@@ -316,6 +316,14 @@ int16_t i;
 	if (true) {
 	   fprintf (stderr, "going to write file %s\n", (p ->  name). toLatin1 (). data ());
 	   checkDir (p -> name);
+
+       // Create a file name if no name is given. This is more an hack
+       if(p->name == "")
+       {
+           p->name = std::tmpnam(nullptr);
+           p->name.replace("/tmp/","");
+       }
+
 	   FILE *x = fopen (((p -> name). toLatin1 (). data ()), "w");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
@@ -377,7 +385,7 @@ int16_t	i;
 	   return NULL;
 
 	for (i = 0; i < theDirectory -> numObjects; i ++) {
-	   if (theDirectory -> dir_proper [i]. ordernumber == -1)
+       if (theDirectory -> dir_proper [i]. ordernumber == -1)
 	      continue;
 	   if (theDirectory -> dir_proper [i]. transportId == transportId)
 	      return &(theDirectory -> dir_proper [i]);
