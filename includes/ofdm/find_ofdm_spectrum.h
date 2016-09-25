@@ -5,7 +5,7 @@
  * Albrecht Lohofener
  *
  * Description:
- * Uses the cross correlation to find the OFDM spectrum inside the signal
+ * Uses the SNR to find the OFDM spectrum inside the signal
  *
  *
  ******************************************************************************
@@ -45,16 +45,10 @@ public:
 private:
     int16_t T_u;
     int16_t carriers;
-    float idealspectrum_eff;
 
     DSPCOMPLEX *signal_buffer;
-    DSPCOMPLEX *idealspectrum_buffer;
-    DSPCOMPLEX *correlation_buffer;
 
     fftwf_plan SpectrumPlan;
-    fftwf_plan Spectrum2nPlan;
-    fftwf_plan IdealSpectrumPlan;
-    fftwf_plan CorrelationPlan;
 };
 
 #endif // FIND_OFDM_SPECTRUM_H

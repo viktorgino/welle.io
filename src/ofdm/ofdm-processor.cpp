@@ -278,17 +278,15 @@ checkSignal:
        getSamples (*FindODFMSpectrum. GetBuffer (),
                     FindODFMSpectrum. GetBufferSize (), 0);
 
-       float ODFMSpectrum = FindODFMSpectrum. FindSpectrum ();
-//	Check it peak of the cross correlation.
-//	1 is the maximum similarity, 0 means the signals are not similar.
-//	Experiments showed that 0.85 similarity indicates a real OFDM spectrum
-       if (ODFMSpectrum < 0.80) {
+       float SNR = FindODFMSpectrum. FindSpectrum ();
+//	Check the SNR
+       if (SNR < 5) {
               goto checkSignal;
        }
        else {
           fprintf (stderr,
-                   "OFDM spectrum correlation coefficient = %f\n",
-                    ODFMSpectrum);
+                   "Signal SNR = %f\n",
+                    SNR);
               isReset = false;
               emit setSignalPresent (true);
        }
@@ -414,10 +412,10 @@ Block_0:
 	   if (f2Correction) {
 	      int correction		= processBlock_0 (ofdmBuffer);
           //fprintf(stderr, "correction: %i\n", correction);
-	      if ((correction == 0) && (previous_1 == 0) &&
-	          (previous_1 == previous_2))
-	         f2Correction = false;
-	      else
+          if ((correction == 0) && (previous_1 == 0) &&
+              (previous_1 == previous_2))
+             f2Correction = false;
+          else
 	      if (correction != 100) {
 	         coarseCorrector	+= correction * params -> carrierDiff;
 	         if (abs (coarseCorrector) > Khz (35))

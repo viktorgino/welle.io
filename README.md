@@ -3,6 +3,15 @@ dab-rpi with QML GUI
 
 This github fork includes a QML based GUI for dab-rpi.
 
+Compile dab-rpi
+---
+Tested with Ubuntu 16.04 LTS
+
+Install the following packages
+libsndfile1-dev libfftw3-dev portaudio19-dev libfaad-dev librtlsdr-dev mesa-common-dev libglu1-mesa-dev
+
+Install QT 5.7 including the charts module by using the the "Qt Online Installer for Linux" https://www.qt.io/download-open-source/
+
 dab-rpi and QT 5.6 cross compiling with GPU acceleration for RPi 2 and 3 
 --------------------------------------------------------------
 The following tutorial has to be followed one by one.
