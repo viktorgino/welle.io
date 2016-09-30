@@ -4,7 +4,8 @@ add_definitions ( -Wall)
 #	modify if you want
 set (CMAKE_INSTALL_PREFIX ../)
 
-#set (CMAKE_PREFIX_PATH "/home/albrecht/Qt/5.5/gcc_64/lib/cmake")
+# Only for a local QT installation
+#set(CMAKE_PREFIX_PATH $ENV{HOME}/Qt/5.7/gcc_64)
 
 if(MINGW)
     add_definitions ( -municode)
@@ -70,9 +71,10 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
-	find_package (Qt5Declarative REQUIRED)
+	#find_package (Qt5Declarative REQUIRED)
 if (GUI_3)
 	find_package (Qt5Qml REQUIRED)
+	find_package (Qt5Charts REQUIRED)
 	find_package (Qt5Quick REQUIRED)
 endif (GUI_3)
 
@@ -284,7 +286,8 @@ endif (GUI_3)
 		./gui_3/stationlist.cpp)
 
 	   set (GUI_3_lib Qt5::Qml
-			Qt5::Quick)
+			Qt5::Quick
+			Qt5::Charts)
 
 	   #set (QRC ./gui_3/touch_gui_resource.qrc)
 	   qt5_add_resources(UI_RESOURCES ./gui_3/touch_gui_resource.qrc)
