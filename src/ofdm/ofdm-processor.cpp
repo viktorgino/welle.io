@@ -24,6 +24,7 @@
 #include	"find_ofdm_spectrum.h"
 #include	"gui.h"
 #include	"fft.h"
+#include    "input/dabstick-osmo/dabstick.h"
 //
 #define	SEARCH_RANGE		(2 * 36)
 #define	CORRELATION_LENGTH	24
@@ -272,6 +273,52 @@ Initing:
 	   }
 
        find_ofdm_spectrum FindODFMSpectrum (T_u, params -> K);
+
+autoGain:
+       bool FoundGain = false;
+       int Gain = 0;
+       float maxSNR = 0;
+       int maxSNRGain = 0;
+       int32_t timer = 0;
+
+       while(!FoundGain)
+       {
+           if( timer == 0)
+           {
+               int ret = ((dabStick*) theRig)->setGain(Gain);
+               if(!ret)
+                   FoundGain = true;
+           }
+
+           getSamples (*FindODFMSpectrum. GetBuffer (),
+                        FindODFMSpectrum. GetBufferSize (), 0);
+
+           timer += FindODFMSpectrum. GetBufferSize ();
+
+           if(timer > 2048000) // Wait one second
+           {
+               timer = 0;
+
+               float SNR = FindODFMSpectrum. FindSpectrum ();
+
+               if(SNR > maxSNR)
+               {
+                   maxSNR = SNR;
+                   maxSNRGain = Gain;
+               }
+
+               if(abs(SNR) < (maxSNR - 1)) // We found a good gain. The difference should be 1 dB
+               {
+                   FoundGain = true;
+
+                   // Use the last gain setting
+                   ((dabStick*) theRig)->setGain(maxSNRGain);
+               }
+
+               fprintf (stderr,  "Gain: %i, maxSNR: %f, SNR: %f\n",  Gain, maxSNR, SNR);
+               Gain++;
+           }
+       }
 
 checkSignal:
 //	Put samples into the signal checker

@@ -195,7 +195,8 @@ int16_t	i;
     // Switch on AGC by default
 //    checkAgc->setChecked(true);
 
-    setAgc();
+    //setAgc();
+    rtlsdr_set_tuner_gain_mode (device, 1);
 
 	*success 		= true;
 	return;
@@ -498,6 +499,20 @@ int16_t	dabStick::maxGain	(void) {
 
 int16_t	dabStick::bitDepth	(void) {
 	return 8;
+}
+
+int16_t dabStick::setGain(int16_t gain)
+{
+    if(gain < gainsCount)
+    {
+        rtlsdr_set_tuner_gain (device, gains [gain]);
+        fprintf (stderr,  "Gain: %i, Value: %i\n",  gain, gains [gain]);
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 //QFrame* dabStick::getFrame  (void) {
