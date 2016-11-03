@@ -275,7 +275,7 @@ Initing:
        find_ofdm_spectrum FindODFMSpectrum (T_u, params -> K);
 
 autoGain:
-       bool FoundGain = false;
+     /*  bool FoundGain = false;
        int Gain = 0;
        float maxSNR = 0;
        int maxSNRGain = 0;
@@ -318,7 +318,7 @@ autoGain:
                fprintf (stderr,  "Gain: %i, maxSNR: %f, SNR: %f\n",  Gain, maxSNR, SNR);
                Gain++;
            }
-       }
+       }*/
 
 checkSignal:
 //	Put samples into the signal checker
@@ -327,7 +327,7 @@ checkSignal:
 
        float SNR = FindODFMSpectrum. FindSpectrum ();
 //	Check the SNR
-       if (SNR < 5) {
+       if (SNR < 7) {
               goto checkSignal;
        }
        else {

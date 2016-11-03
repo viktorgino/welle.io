@@ -52,6 +52,12 @@ static
 void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
 dabStick	*theStick	= (dabStick *)ctx;
 int32_t	tmp;
+float time = 0;
+
+    if(!theStick->foundFirstGain)
+        time = 0.25; // 250 ms
+    else
+        time = 2; // 1 s
 
 	if ((theStick == NULL) || (len != READLEN_DEFAULT))
 	   return;
@@ -59,6 +65,99 @@ int32_t	tmp;
 	tmp = theStick -> _I_Buffer -> putDataIntoBuffer (buf, len);
 	if ((len - tmp) > 0)
 	   theStick	-> sampleCounter += len - tmp;
+
+    theStick->SNRTimer += len /(float) 2048000;
+
+    if(theStick->SNRTimer > time)
+    {
+        DSPCOMPLEX *signal_buffer = *theStick->FindODFMSpectrum->GetBuffer ();
+        int32_t BufferSize = theStick->FindODFMSpectrum->GetBufferSize ();
+
+        for(int i=0;i<BufferSize;i++)
+        {
+            float real = (buf[i*2] - 128) / 128.0;
+            float imag = (buf[(2*i)+1] - 128) / 128.0;
+            signal_buffer[i] = DSPCOMPLEX(real, imag);
+        }
+
+       float SNR = theStick->FindODFMSpectrum->FindSpectrum();
+
+       // Set max gain
+       if(SNR > theStick->maxSNR)
+       {
+           theStick->maxSNR = SNR;
+           theStick->maxSNRGain = theStick->Gain;
+       }
+
+       // With higher gains the SNR can be lower
+       if(abs(SNR) < (theStick->maxSNR - 1) && !theStick->foundFirstGain) // We found a good gain. The difference should be 1 dB
+       {
+           fprintf (stderr,  "Gain: %i, maxSNR: %f, SNR: %f\n",  theStick->Gain, theStick->maxSNR, SNR);
+
+           // Use the last gain setting
+           //theStick->setGain(theStick->maxSNRGain);
+
+
+           for(int i=0;i<SNRBUFFERSIZE;i++)
+               theStick->SNRBuffer[i] = SNR;
+
+           theStick->currentSNR = SNR;
+           theStick->Gain = theStick->maxSNRGain;
+           theStick->foundFirstGain = true;
+           theStick->setNewGain = true;
+
+           fprintf(stderr, "Found first gain\n");
+       }
+
+       if(!theStick->foundFirstGain && theStick->Gain <= 29)
+       {
+           //theStick->setGain(theStick->Gain);
+           theStick->Gain++;
+           theStick->setNewGain = true;
+       }
+
+       if(theStick->foundFirstGain)
+       {
+           theStick->SNRBuffer[theStick->SNRBufferPos] = SNR;
+           theStick->SNRBufferPos++;
+           if(theStick->SNRBufferPos >= SNRBUFFERSIZE)
+               theStick->SNRBufferPos = 0;
+
+           // Remove old SNR
+           theStick->currentSNR -= theStick->SNRBuffer[theStick->SNRBufferPos] / (float) SNRBUFFERSIZE;
+
+           // Add new SNR
+           theStick->currentSNR += SNR / (float) SNRBUFFERSIZE;
+
+           if(SNR > theStick->currentSNR)
+           {
+               theStick->maxSNRGain = theStick->Gain;
+           }
+
+           if(theStick->GainOffset >= 3)
+               theStick->GainOffsetUp = false;
+           if(theStick->GainOffset <= -3)
+               theStick->GainOffsetUp = true;
+
+           if(theStick->GainOffsetUp)
+               theStick->GainOffset++;
+           else
+               theStick->GainOffset--;
+
+           if(theStick->Gain <= 29)
+           {
+               theStick->Gain = theStick->maxSNRGain + theStick->GainOffset;
+               theStick->setNewGain = true;
+           }
+
+           fprintf(stderr, "SNR: %f, currentSNR, %f, Gain: %i, maxSNRGain: %i, GainOffset: %i\n", SNR, theStick->currentSNR, theStick->Gain, theStick->maxSNRGain, theStick->GainOffset);
+       }
+
+       // Reset SNR calc timer
+       theStick->SNRTimer = 0;
+    }
+
+    //fprintf(stderr, "SampleCount: %f\n", theStick->SampleCount );
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -94,6 +193,22 @@ int32_t	r;
 int16_t	deviceIndex;
 int16_t	i;
 
+    SNRTimer = 0;
+    Gain = 0;
+    maxSNR = 0;
+    maxSNRGain = 0;
+    currentSNR = 0;
+    foundFirstGain = false;
+    setNewGain = false;
+    GainOffset = 0;
+    GainOffsetUp = true;
+    memset(SNRBuffer, 0, sizeof(float) * SNRBUFFERSIZE);
+    SNRBufferPos = 0;
+
+    SetGainTimer = new QTimer(this);
+    connect(SetGainTimer, SIGNAL(timeout()), this, SLOT(SetGainTimerTimeout()));
+    SetGainTimer->start(100); // 100 ms
+
 	dabstickSettings	= s;
 	*success		= false;	// just the default
 //	this	-> myFrame	= new QFrame (NULL);
@@ -109,6 +224,7 @@ int16_t	i;
 	this	-> vfoOffset	= 0;
     gains			= NULL;
     CurrentManualGain	= 0;
+    FindODFMSpectrum = new find_ofdm_spectrum (2048, 1536);
 
 #ifdef	__MINGW32__
 	const char *libraryString = "rtlsdr.dll";
@@ -533,3 +649,15 @@ void	dabStick::setAgc	(void) {
 //    }
 }
 
+void	dabStick::SetGainTimerTimeout(void)
+{
+    if(setNewGain)
+    {
+       /* if(foundFirstGain)
+            setGain(maxSNRGain);
+         else*/
+            setGain(Gain);
+
+        setNewGain = false;
+    }
+}

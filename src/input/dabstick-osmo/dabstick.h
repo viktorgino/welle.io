@@ -30,12 +30,15 @@
 
 #include	<QObject>
 #include	<QSettings>
+#include    <QTimer>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"fir-filters.h"
 #include	"virtual-input.h"
 #include	"dongleselect.h"
 #include	"ui_dabstick-widget-osmo.h"
+#include	"find_ofdm_spectrum.h"
+
 class	dll_driver;
 //
 //	create typedefs for the library functions
@@ -65,6 +68,9 @@ typedef uint32_t (*  pfnrtlsdr_get_device_count) (void);
 typedef	int (* pfnrtlsdr_set_freq_correction)(rtlsdr_dev_t *, int);
 typedef	char *(* pfnrtlsdr_get_device_name)(int);
 }
+
+#define SNRBUFFERSIZE 10
+
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read is as dll
 //	It does not do any processing
@@ -93,7 +99,22 @@ public:
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
 	int32_t		sampleCounter;
+    find_ofdm_spectrum *FindODFMSpectrum;
+
+    float SNRTimer;
+    int Gain;
+    float maxSNR;
+    float currentSNR;
+    float SNRBuffer[SNRBUFFERSIZE];
+    int SNRBufferPos;
+    int maxSNRGain;
+    bool foundFirstGain;
+    bool setNewGain;
+    int GainOffset;
+    bool GainOffsetUp;
+
 private:
+    QTimer      *SetGainTimer;
 	QSettings	*dabstickSettings;
 	dongleSelect	*dongleSelector;
 	int32_t		inputRate;
@@ -131,6 +152,7 @@ private slots:
 	void		set_fCorrection		(int);
 	void		set_KhzOffset		(int);
     void		setAgc			(void);
+    void        SetGainTimerTimeout(void);
 
 };
 #endif
