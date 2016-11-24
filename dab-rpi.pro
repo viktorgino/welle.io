@@ -14,7 +14,7 @@ QMAKE_LFLAGS	+=  -flto -g -O3
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-CONFIG		+= NO_SSE_SUPPORT
+#CONFIG		+= NO_SSE_SUPPORT
 
 target.path = /home/pi/bin
 INSTALLS += target

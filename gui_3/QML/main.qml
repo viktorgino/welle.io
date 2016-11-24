@@ -169,7 +169,7 @@ ApplicationWindow {
                                  event.accepted = true;
                              }
 
-            initialItem: Item {
+            /*initialItem: Item {
                 width: parent.width
                 height: parent.height
                 ListView {
@@ -187,7 +187,9 @@ ApplicationWindow {
                     }
 
                 }
-            }
+            }*/
+
+            initialItem: stackView.push(settingsPageLoader)
         }
 
         SplitView {
