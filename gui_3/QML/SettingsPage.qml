@@ -30,26 +30,36 @@ Item {
     }
 
     ColumnLayout {
-        anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.margins: Units.dp(20)
+
+        spacing: Units.dp(30)
+        width: parent.width - 2 * anchors.margins
         height: parent.height
 
-        ColumnLayout{
-            spacing: Units.dp(30)
+        Column{
+            anchors.top: parent.top
+            anchors.margins: parent.anchors.margins
+            spacing: Units.dp(20)
+            width: parent.width
 
-            ColumnLayout{
-                spacing: Units.dp(10)
+            Column{
+                width: parent.width
+                spacing: parent.spacing / 2
                 RowLayout {
+                    width: parent.width
                     spacing: Units.dp(20)
                     TextStandart {
                         Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
                         text: "Channel scan"
+                        //anchors.left: parent.left
                     }
 
                     TouchButton {
                         id: startChannelScanButton
                         text: "Start"
                         implicitWidth: Units.dp(80)
+                        anchors.horizontalCenter: parent.horizontalCenter
                         onClicked: {
                             startChannelScanButton.enabled = false
                             stopChannelScanButton.enabled = true
@@ -62,6 +72,7 @@ Item {
                         text: "Stop"
                         implicitWidth: Units.dp(80)
                         enabled: false
+                        anchors.right: parent.right
                         onClicked: {
                             startChannelScanButton.enabled = true
                             stopChannelScanButton.enabled = false
@@ -98,14 +109,19 @@ Item {
                 objectName: "enableExpertMode"
                 checked: false
             }
+
+
+            TouchButton {
+                id: inputSettingsButton
+                text: "Input settings"
+                width: parent.width
+            }
         }
 
         TouchButton {
             id: exitAppButton
             text: "Exit dab-rpi"
             implicitWidth: parent.width
-            anchors.bottom: parent.bottom
-            anchors.bottomMargin: Units.dp(10)
             onClicked:  mainWindow.exitApplicationClicked()
         }
     }

@@ -1,27 +1,31 @@
 import QtQuick 2.0
 import QtQuick.Controls 1.2
 import QtQuick.Controls.Styles 1.2
+import QtQuick.Layouts 1.1
 
 // Import custom styles
 import "."
 
-Row {
+RowLayout {
     property alias name: nameView.text
     property alias objectName: switchView.objectName
     property alias checked: switchView.checked
 
+    width: parent.width
     spacing: Units.dp(20)
+
     Text {
         id: nameView
-        width: Units.dp(212)
         font.pixelSize: Style.textStandartSize
         font.family: Style.textFont
         color: Style.textColor
+        anchors.left: parent.left
         Behavior on x { NumberAnimation{ easing.type: Easing.OutCubic} }
     }
     Switch {
         id: switchView
         style: switchStyle
+        anchors.right: parent.right
     }
 
     /* Switch Style */
