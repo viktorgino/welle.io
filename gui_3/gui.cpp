@@ -216,6 +216,8 @@ int16_t	latency;
     connect(rootObject, SIGNAL(stopChannelScanClicked()),this, SLOT(stopChannelScanClick()));
     connect(rootObject, SIGNAL(exitApplicationClicked()),this, SLOT(TerminateProcess()));
     connect(rootObject, SIGNAL(exitSettingsClicked()),this, SLOT(saveSettings()));
+    connect(rootObject, SIGNAL(inputEnableAGCChanged(bool)),this, SLOT(inputEnableAGCChange(bool)));
+    connect(rootObject, SIGNAL(inputGainChanged(double)),this, SLOT(inputGainChange(double)));
 }
 
 	RadioInterface::~RadioInterface () {
@@ -1408,6 +1410,19 @@ void RadioInterface::saveSettings(void)
 void RadioInterface::showCorrectedErrors(int Errors)
 {
     emit displayCorrectedErrors(Errors);
+}
+
+void RadioInterface::inputEnableAGCChange(bool checked)
+{
+    if(checked)
+        fprintf(stderr, "AGC on\n");
+    else
+        fprintf(stderr, "AGC off\n");
+}
+
+void RadioInterface::inputGainChange(double gain)
+{
+    fprintf(stderr, "Gain: %f\n", gain);
 }
 
 void RadioInterface::updateSpectrum(QAbstractSeries *series) // This function is called by the QML GUI

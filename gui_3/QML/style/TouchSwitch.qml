@@ -7,11 +7,14 @@ import QtQuick.Layouts 1.1
 import "."
 
 RowLayout {
+    id: masterLayout
+    signal changed(bool valueChecked)
+
     property alias name: nameView.text
     property alias objectName: switchView.objectName
     property alias checked: switchView.checked
 
-    width: parent.width
+    Layout.preferredWidth: parent.width
     spacing: Units.dp(20)
 
     Text {
@@ -26,6 +29,7 @@ RowLayout {
         id: switchView
         style: switchStyle
         anchors.right: parent.right
+        onClicked: masterLayout.changed(switchView.checked)
     }
 
     /* Switch Style */

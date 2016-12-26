@@ -168,6 +168,8 @@ private slots:
     void    scanChannelTimerTimeout(void);
     void    saveSettings(void);
     void    showCorrectedErrors (int);
+    void    inputEnableAGCChange(bool checked);
+    void    inputGainChange(double gain);
 #endif
 signals:
     void currentStation(QString text);

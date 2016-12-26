@@ -51,6 +51,8 @@ ApplicationWindow {
     signal stopChannelScanClicked
     signal exitApplicationClicked
     signal exitSettingsClicked
+    signal inputEnableAGCChanged(bool valueChecked)
+    signal inputGainChanged(double valueGain)
 
     id: mainWindow
     visible: true
@@ -108,7 +110,10 @@ ApplicationWindow {
                         exitSettingsClicked();
                     }
                     else
-                        stackView.push(settingsPageLoader)
+                    {
+                        stackView.push(settingsPageLoader);
+                        //console.log("width: " + parent.width);
+                    }
                 }
             }
         }
@@ -169,7 +174,7 @@ ApplicationWindow {
                                  event.accepted = true;
                              }
 
-            /*initialItem: Item {
+            initialItem: Item {
                 width: parent.width
                 height: parent.height
                 ListView {
@@ -185,11 +190,10 @@ ApplicationWindow {
                         channelNameText: channelName
                         onClicked: mainWindow.stationClicked(stationName, channelName)
                     }
-
                 }
-            }*/
+            }
 
-            initialItem: stackView.push(settingsPageLoader)
+            //initialItem: stackView.push(settingsPageLoader)
         }
 
         SplitView {
