@@ -8,7 +8,7 @@ Table of contents
 ====
 
   * [Usage](#usage)
-    * [Command Line Parameter](#command-line-parameter)
+    * [Command Line Parameters](#command-line-parameters)
     * [Settings INI-File](#settings-ini-file)
   * [Building](#building)
     * [General Information](#general-information)
@@ -19,10 +19,24 @@ Table of contents
 Usage
 ====
 
-Command Line Parameter
+Command Line Parameters
 ---
-TBD (starting input selection, command line parameters, GUIs)
 
+Parameter | Description | Valid for GUI
+------ | ---------- | ----
+i | TBD | GUI_1, GUI_2, GUI_3
+S | Sync method. Default: 2 | GUI_1, GUI_2, GUI_3
+D | Input device. Possible are: airspy, rtl_tcp, sdrplay, dabstick | GUI_2, GUI_3
+M | DAB mode. Possible are: 1,2 or 4, Default: 1 | GUI_2, GUI_3
+B | DAB band | GUI_2, GUI_3
+I | rtl_tcp server IP address. Only valid for input rtl_tcp | GUI_2, GUI_3
+
+Example usage:
+  
+  ```
+# dab-rpi -D rtl_tcp -I 192.168.1.1
+  ```
+  
 Settings INI-File
 ---
 TBD 
@@ -53,7 +67,6 @@ A similar facility exists for the CMakeLists.txt file
 
 Note that selecting a device requires installing the library and the development files.
 
-Options:
 Since an RPI is often run headless, an option is included to configure such that the PCM output is sent to a simple TCP server, listening at port 20040. Uncomment the following lines.
 
   ```
@@ -72,7 +85,7 @@ Depending on the settings in the dab-rpi.pro file, the output is sent to the loc
 Add to following lines for having the output sent to port 20040.
 
   ```
-  CONFIG += tcp-streamer
+CONFIG += tcp-streamer
   ```
 
 Note that in that case there will be no sound output locally. I am using that feature to have the RPI on a location different from where I am normally sitting.
@@ -123,7 +136,50 @@ LIBS		+= -lfaad
 
 Windows 10
 ---
-TBD
+This sections shows how to compile dab-rpi with GUI_3 on Windows 10. Windows 7 should also be possible but is not tested. 
+
+1. Install QT 5.7 including the QT Charts and mingw modules by using the the "Qt Online Installer for Windows" https://www.qt.io/download-open-source/
+2. Clone dab-rpi https://github.com/JvanKatwijk/dab-rpi.git e.g. by using [TortoiseGit](https://tortoisegit.org).
+3. Clone the dab-rpi Windows libraries https://github.com/AlbrechtL/dab-rpi_win_libs.git.
+4. Start QT Creator and open the project file "dab-rpi.pro" inside the folder "dab-rpi".
+5. Edit "dab-rpi.pro" and adapt it to your needs. This example is tested with the following settings:
+
+  ```
+win32 {
+DESTDIR	= ../windows-bin-dab
+# includes in mingw differ from the includes in fedora linux
+#INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
+INCLUDEPATH += ../dab-rpi_win_libs/include
+LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+LIBS		+= -L../dab-rpi_win_libs/x86
+LIBS		+= -lfftw3f-3
+LIBS		+= -lportaudio_x86
+LIBS		+= -llibsndfile-1
+LIBS		+= -lole32
+LIBS		+= -lwinpthread
+LIBS		+= -lwinmm
+LIBS 		+= -lstdc++
+LIBS		+= -lws2_32
+LIBS		+= -llibfaad
+LIBS		+= -lusb-1.0
+DEFINES		+= MOT_BASICS__		# use at your own risk
+DEFINES		+= MSC_DATA__		# use at your own risk
+CONFIG		+= NO_SSE_SUPPORT 
+#CONFIG		+= extio
+#CONFIG		+= airspy
+#CONFIG		+= airspy-exp
+CONFIG		+= rtl_tcp
+CONFIG		+= dabstick_osmo
+#CONFIG		+= dabstick_new
+#CONFIG		+= sdrplay
+#CONFIG		+= tcp-streamer
+#CONFIG		+= rtp-streamer
+CONFIG		+= gui_3
+}
+  ```
+
+6. Build dab-rpi
+7. Run dab-rpi and enjoy it
 
 Raspberry Pi 2 and 3
 ---
