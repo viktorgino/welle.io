@@ -1,13 +1,14 @@
 dab-rpi
 =====================
-This directory contains the implementation of a simple DAB/DAB+ receiver. It is optimized for embedded systems like Raspberry Pi2 and Raspberry Pi 3 but it runs also on regulars PC as well.
+This repository contains the implementation of a simple DAB/DAB+ receiver. It is optimized for embedded systems like Raspberry Pi 2 and Raspberry Pi 3 but it runs on regulars PC as well.
 
-The receiver supports terrestrial DAB and DAB+ reception with as input either the stream from an AIRSPY, a SDRplay, a dabstick (direct or through the rtl_tcp server) or a (prerecorded) file, and it will output through the selected soundcard.
+The receiver supports terrestrial DAB and DAB+ reception with as input either the stream from an AIRSPY, a SDRplay, a dabstick (rtl_sdr), a rtl_tcp server or a (prerecorded) file, and it will output through the selected soundcard.
 
 Table of contents
 ====
 
   * [Usage](#usage)
+    * [GUIs](#guis)
     * [Command Line Parameters](#command-line-parameters)
     * [Settings INI-File](#settings-ini-file)
   * [Building](#building)
@@ -18,6 +19,14 @@ Table of contents
 
 Usage
 ====
+
+GUIs
+---
+GUI | Description 
+------ | ----------
+GUI_1 | Is a GUI by using QT widgets.
+GUI_2 | Is assumed that dab-rpi itself does not have a GUI. It is controlled remotely. More information can be found in the file [README.GUI_2](README.GUI_2]).
+GUI_3 | Is a touch and high DPI display optimized GUI based in QT QML. But it runs also well on regular PCs.
 
 Command Line Parameters
 ---
