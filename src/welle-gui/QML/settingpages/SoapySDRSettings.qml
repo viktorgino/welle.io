@@ -67,13 +67,13 @@ SettingSection {
 
     function initDevice(isAutoDevice) {
         if(!isAutoDevice)
-            guiHelper.openSoapySdr()
+            WelleIoPlugin.GUIHelper.openSoapySdr()
         __setParams()
     }
 
     function __setParams() {
-        guiHelper.setAntennaSoapySdr(antenna.text)
-        guiHelper.setDriverArgsSoapySdr(clockSource.text)
-        guiHelper.setClockSourceSoapySdr(driverArgs.text)
+        WelleIoPlugin.GUIHelper.setAntennaSoapySdr(antenna.text)
+        WelleIoPlugin.GUIHelper.setDriverArgsSoapySdr(clockSource.text)
+        WelleIoPlugin.GUIHelper.setClockSourceSoapySdr(driverArgs.text)
     }
 }

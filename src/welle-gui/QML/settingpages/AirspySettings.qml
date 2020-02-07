@@ -17,16 +17,16 @@ SettingSection {
 
     function initDevice(isAutoDevice) {
         if(!isAutoDevice)
-            guiHelper.openAirspy()
+            WelleIoPlugin.GUIHelper.openAirspy()
 
-        guiHelper.setBiasTeeAirspy(enableBiasTee.checked)
+        WelleIoPlugin.GUIHelper.setBiasTeeAirspy(enableBiasTee.checked)
     }
 
     Switch {
         id: enableBiasTee
         text: qsTr("Enable bias tee")
         onClicked: {
-            guiHelper.setBiasTeeAirspy(checked)
+            WelleIoPlugin.GUIHelper.setBiasTeeAirspy(checked)
         }
     }
 }

@@ -75,7 +75,7 @@ SettingSection {
     }
 
     function __openDevice() {
-        guiHelper.openRawFile(filePath.text, fileFormat.currentText)
+        WelleIoPlugin.GUIHelper.openRawFile(filePath.text, fileFormat.currentText)
     }
 
     function __getPath(urlString) {

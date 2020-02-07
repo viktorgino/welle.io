@@ -73,7 +73,7 @@ ViewBaseFrame {
     }
 
     Connections{
-        target: guiHelper
+        target: WelleIoPlugin.GUIHelper
 
         onSetImpulseResponseAxis: {
             spectrum.yMax = Ymax
@@ -100,7 +100,7 @@ ViewBaseFrame {
         running: parent.visible ? true : false // Trigger new data only if spectrum is showed
         repeat: true
         onTriggered: {
-           guiHelper.updateImpulseResponse();
+           WelleIoPlugin.GUIHelper.updateImpulseResponse();
         }
     }
 
@@ -110,8 +110,8 @@ ViewBaseFrame {
 
     function __registerSeries() {
        if(spectrum.isWaterfall)
-           guiHelper.registerImpulseResonseWaterfall(spectrum.waterfallObject);
+           WelleIoPlugin.GUIHelper.registerImpulseResonseWaterfall(spectrum.waterfallObject);
        else
-           guiHelper.registerImpulseResonseSeries(spectrum.spectrumObject.series(0))
+           WelleIoPlugin.GUIHelper.registerImpulseResonseSeries(spectrum.spectrumObject.series(0))
     }
 }

@@ -15,24 +15,24 @@ ViewBaseFrame {
 
         TextExpert {
             name: qsTr("Device") + ":"
-            text: radioController.deviceName
+            text: WelleIoPlugin.RadioController.deviceName
         }
 
         TextExpert {
             name: qsTr("Current channel") + ":"
-            text: radioController.channel + " (" + (radioController.frequency > 0 ? radioController.frequency/1e6 :  "N/A") + " MHz)"
+            text: WelleIoPlugin.RadioController.channel + " (" + (WelleIoPlugin.RadioController.frequency > 0 ? WelleIoPlugin.RadioController.frequency/1e6 :  "N/A") + " MHz)"
         }
 
         RowLayout {
             Rectangle{
                 height: Units.dp(16)
                 width: Units.dp(16)
-                color: radioController.isSync ? "green" : "red"
+                color: WelleIoPlugin.RadioController.isSync ? "green" : "red"
             }
 
             TextExpert {
                 name: qsTr("Frame sync")  + ":"
-                text: radioController.isSync ? qsTr("OK") : qsTr("Not synced")
+                text: WelleIoPlugin.RadioController.isSync ? qsTr("OK") : qsTr("Not synced")
             }
 
         }
@@ -41,12 +41,12 @@ ViewBaseFrame {
             Rectangle{
                 height: Units.dp(16)
                 width: Units.dp(16)
-                color: radioController.isFICCRC ? "green" : "red"
+                color: WelleIoPlugin.RadioController.isFICCRC ? "green" : "red"
             }
 
             TextExpert {
                 name: qsTr("FIC CRC")  + ":"
-                text: radioController.isFICCRC ? qsTr("OK") : qsTr("Error")
+                text: WelleIoPlugin.RadioController.isFICCRC ? qsTr("OK") : qsTr("Error")
             }
         }
 
@@ -54,40 +54,40 @@ ViewBaseFrame {
             Rectangle{
                 height: Units.dp(16)
                 width: Units.dp(16)
-                color: (radioController.frameErrors === 0
-                        && radioController.isSync
-                        && radioController.isFICCRC) ? "green" : "red"
+                color: (WelleIoPlugin.RadioController.frameErrors === 0
+                        && WelleIoPlugin.RadioController.isSync
+                        && WelleIoPlugin.RadioController.isFICCRC) ? "green" : "red"
             }
 
             TextExpert {
                 name: qsTr("Frame errors")  + ":"
-                text: radioController.frameErrors
+                text: WelleIoPlugin.RadioController.frameErrors
             }
         }
 
         TextExpert {
             name: qsTr("Frequency correction") + ":"
-            text: radioController.frequencyCorrection + " Hz (" + (radioController.frequency > 0 ? radioController.frequencyCorrectionPpm.toFixed(2) : "N/A") + " ppm)"
+            text: WelleIoPlugin.RadioController.frequencyCorrection + " Hz (" + (WelleIoPlugin.RadioController.frequency > 0 ? WelleIoPlugin.RadioController.frequencyCorrectionPpm.toFixed(2) : "N/A") + " ppm)"
         }
 
         TextExpert {
             name: qsTr("SNR") + ":"
-            text: radioController.snr + " dB"
+            text: WelleIoPlugin.RadioController.snr + " dB"
         }
 
         TextExpert {
             name: qsTr("RS errors") + ":"
-            text: radioController.rsErrors
+            text: WelleIoPlugin.RadioController.rsErrors
         }
 
         TextExpert {
             name: qsTr("AAC errors") + ":"
-            text: radioController.aacErrors
+            text: WelleIoPlugin.RadioController.aacErrors
         }
 
         TextExpert {
             name: qsTr("DAB date and time") + ":"
-            text: radioController.dateTime.toUTCString()
+            text: WelleIoPlugin.RadioController.dateTime.toUTCString()
         }
     }
 }

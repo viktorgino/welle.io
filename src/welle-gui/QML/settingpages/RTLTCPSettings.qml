@@ -83,7 +83,7 @@ SettingSection {
                 + ipAddress2.currentIndex + "."
                 + ipAddress3.currentIndex + "."
                 + ipAddress4.currentIndex
-        guiHelper.openRtlTcp(ipAdress, ipPort.currentIndex, true)
+        WelleIoPlugin.GUIHelper.openRtlTcp(ipAdress, ipPort.currentIndex, true)
     }
 }
 

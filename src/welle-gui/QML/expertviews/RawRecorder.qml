@@ -34,9 +34,9 @@ ViewBaseFrame {
 
                 onPressed: {
                     if(!isStart)
-                        radioController.initRecorder(ringeBufferSize)
+                        WelleIoPlugin.RadioController.initRecorder(ringeBufferSize)
                     else
-                        radioController.triggerRecorder("")
+                        WelleIoPlugin.RadioController.triggerRecorder("")
 
                     isStart = !isStart
                 }

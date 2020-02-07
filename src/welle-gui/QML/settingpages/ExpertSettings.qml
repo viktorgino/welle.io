@@ -50,10 +50,10 @@ Item {
                 text: qsTr("Enable coarse corrector (for receivers with >1kHz error)")
                 checked: true
                 onCheckedChanged: {
-                    radioController.disableCoarseCorrector(!checked)
+                    WelleIoPlugin.RadioController.disableCoarseCorrector(!checked)
                 }
 
-                Component.onCompleted: radioController.disableCoarseCorrector(!checked)
+                Component.onCompleted: WelleIoPlugin.RadioController.disableCoarseCorrector(!checked)
             }
 
             RowLayout {
@@ -64,10 +64,10 @@ Item {
                     model: [ "GetMiddle", "CorrelatePRS", "PatternOfZeros" ];
                     currentIndex: 1
                     onCurrentIndexChanged: {
-                        radioController.setFreqSyncMethod(currentIndex)
+                        WelleIoPlugin.RadioController.setFreqSyncMethod(currentIndex)
                     }
 
-                    Component.onCompleted: radioController.setFreqSyncMethod(currentIndex)
+                    Component.onCompleted: WelleIoPlugin.RadioController.setFreqSyncMethod(currentIndex)
                 }
 
                 TextStandart {
@@ -82,10 +82,10 @@ Item {
                 text: qsTr("Enable TII decoding to console log (increases CPU usage)")
                 checked: false
                 onCheckedChanged: {
-                    radioController.enableTIIDecode(checked)
+                    WelleIoPlugin.RadioController.enableTIIDecode(checked)
                 }
 
-                Component.onCompleted: radioController.enableTIIDecode(checked)
+                Component.onCompleted: WelleIoPlugin.RadioController.enableTIIDecode(checked)
             }
 
             RowLayout {
@@ -95,10 +95,10 @@ Item {
                     model: [ "Strongest Peak", "Earliest Peak With Binning", "Threshold Before Peak" ];
                     currentIndex: 1
                     onCurrentIndexChanged: {
-                        radioController.selectFFTWindowPlacement(currentIndex)
+                        WelleIoPlugin.RadioController.selectFFTWindowPlacement(currentIndex)
                     }
 
-                    Component.onCompleted: radioController.selectFFTWindowPlacement(currentIndex)
+                    Component.onCompleted: WelleIoPlugin.RadioController.selectFFTWindowPlacement(currentIndex)
                 }
 
                 TextStandart {

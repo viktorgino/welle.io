@@ -23,11 +23,11 @@ ViewBaseFrame {
             var scatter = createSeries(ChartView.SeriesTypeScatter, "scatter series", axisX, axisY)
             scatter.markerSize = 1.0
             scatter.borderColor = "#38ad6b";
-            guiHelper.registerConstellationSeries(series(0));
+            WelleIoPlugin.GUIHelper.registerConstellationSeries(series(0));
         }
 
         Connections{
-            target: guiHelper
+            target: WelleIoPlugin.GUIHelper
 
             onSetConstellationAxis: {
                 axisX.min = Xmin
@@ -53,7 +53,7 @@ ViewBaseFrame {
             running: parent.visible ? true : false // Trigger new data only if spectrum is showed
             repeat: true
             onTriggered: {
-               guiHelper.updateConstellation();
+               WelleIoPlugin.GUIHelper.updateConstellation();
             }
         }
 

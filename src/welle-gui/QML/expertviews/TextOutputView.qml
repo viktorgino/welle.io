@@ -50,7 +50,7 @@ ViewBaseFrame {
     }
 
     Connections{
-        target: guiHelper
+        target: WelleIoPlugin.GUIHelper
 
         onNewDebugOutput: {
             textField.append(text)

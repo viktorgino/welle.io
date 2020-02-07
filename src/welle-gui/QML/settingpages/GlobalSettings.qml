@@ -28,18 +28,18 @@ Item {
 
     Component.onCompleted: {
         console.debug("Apply settings initially")
-        radioController.setGain(manualGain.value)
-        radioController.setAGC(enableAGC.checked)
+        WelleIoPlugin.RadioController.setGain(manualGain.value)
+        WelleIoPlugin.RadioController.setAGC(enableAGC.checked)
     }
 
     Connections{
-        target: radioController
+        target: WelleIoPlugin.RadioController
 
-        onGainCountChanged: manualGain.to = radioController.gainCount
+        onGainCountChanged: manualGain.to = WelleIoPlugin.RadioController.gainCount
     }
 
     Connections {
-        target: guiHelper
+        target: WelleIoPlugin.GUIHelper
 
         onNewDeviceId: {
             switch(deviceId) {
@@ -80,11 +80,11 @@ Item {
                     onCurrentIndexChanged: {
                         // Load appropriate settings
                         switch(currentIndex) {
-                        case 1: guiHelper.addTranslator("nl_NL", this); break
-                        case 2: guiHelper.addTranslator("en_GB", this); break
-                        case 3: guiHelper.addTranslator("de_DE", this); break
-                        case 4: guiHelper.addTranslator("pl_PL", this); break
-                        default: guiHelper.addTranslator("auto", this); break
+                        case 1: WelleIoPlugin.GUIHelper.addTranslator("nl_NL", this); break
+                        case 2: WelleIoPlugin.GUIHelper.addTranslator("en_GB", this); break
+                        case 3: WelleIoPlugin.GUIHelper.addTranslator("de_DE", this); break
+                        case 4: WelleIoPlugin.GUIHelper.addTranslator("pl_PL", this); break
+                        default: WelleIoPlugin.GUIHelper.addTranslator("auto", this); break
                         }
                     }
                 }
@@ -105,10 +105,10 @@ Item {
                 Layout.fillWidth: true
                 checked: true
                 onClicked: {
-                    radioController.setAGC(checked)
+                    WelleIoPlugin.RadioController.setAGC(checked)
 
                     if(checked == false)
-                        radioController.setGain(manualGain.value)
+                        WelleIoPlugin.RadioController.setGain(manualGain.value)
                 }
             }
 
@@ -126,7 +126,7 @@ Item {
 
                     TextStandart {
                         id: valueSliderView
-                        text: qsTr("Value: ") + radioController.gainValue.toFixed(2)
+                        text: qsTr("Value: ") + WelleIoPlugin.RadioController.gainValue.toFixed(2)
                     }
                 }
 
@@ -139,7 +139,7 @@ Item {
 
                     onValueChanged: {
                         if(enableAGC.checked == false)
-                            radioController.setGain(value)
+                            WelleIoPlugin.RadioController.setGain(value)
                     }
                 }
             }
@@ -171,7 +171,7 @@ Item {
 
             Component.onCompleted: {
                 if(enableAutoSdr.checked)
-                    guiHelper.openAutoDevice()
+                    WelleIoPlugin.GUIHelper.openAutoDevice()
 
                 sdrSpecificSettings.item.initDevice(enableAutoSdr.checked)
                 isLoaded = true

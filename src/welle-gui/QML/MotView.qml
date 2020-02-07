@@ -13,7 +13,7 @@ ViewBaseFrame {
         fillMode: Image.PreserveAspectFit
 
         Connections{
-            target: guiHelper
+            target: WelleIoPlugin.GUIHelper
             onMotChanged:{
                 motImage.source = "image://motslideshow/image_" + Math.random()
             }

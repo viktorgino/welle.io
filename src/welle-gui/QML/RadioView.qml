@@ -15,7 +15,7 @@ ViewBaseFrame {
         anchors.top: parent.top
         anchors.topMargin: Units.dp(5)
         anchors.horizontalCenter: parent.horizontalCenter
-        text: radioController.ensemble.trim()
+        text: WelleIoPlugin.RadioController.ensemble.trim()
     }
 
     // Use a button to display a icon
@@ -37,7 +37,7 @@ ViewBaseFrame {
         implicitWidth: contentItem.implicitWidth + Units.dp(30)
         implicitHeight: implicitWidth
 
-        onCheckedChanged: checked ? radioController.setVolume(0) : radioController.setVolume(100)
+        onCheckedChanged: checked ? WelleIoPlugin.RadioController.setVolume(0) : WelleIoPlugin.RadioController.setVolume(100)
     }
 
     RowLayout{
@@ -49,28 +49,28 @@ ViewBaseFrame {
         Rectangle{
             height: Units.dp(4)
             width: Units.dp(4)
-            color: (radioController.snr > 2) ? "green" : "grey"
+            color: (WelleIoPlugin.RadioController.snr > 2) ? "green" : "grey"
         }
         Rectangle{
             height: Units.dp(8)
             width: Units.dp(4)
-            color: (radioController.snr > 5) ? "green" : "grey"
+            color: (WelleIoPlugin.RadioController.snr > 5) ? "green" : "grey"
         }
         Rectangle{
             height: Units.dp(12)
             width: Units.dp(4)
-            color: (radioController.snr > 8) ? "green" : "grey"
+            color: (WelleIoPlugin.RadioController.snr > 8) ? "green" : "grey"
         }
         Rectangle{
             height: Units.dp(16)
             width: Units.dp(4)
-            color: (radioController.snr > 11) ? "green" : "grey"
+            color: (WelleIoPlugin.RadioController.snr > 11) ? "green" : "grey"
         }
 
         Rectangle{
             height: Units.dp(20)
             width: Units.dp(4)
-            color: (radioController.snr > 15) ? "green" : "grey"
+            color: (WelleIoPlugin.RadioController.snr > 15) ? "green" : "grey"
         }
     }
 
@@ -82,7 +82,7 @@ ViewBaseFrame {
             Layout.alignment: Qt.AlignHCenter
 
             TextRadioStation {
-                text: radioController.title.trim()
+                text: WelleIoPlugin.RadioController.title.trim()
 
                 // Use a button to display a icon
                 Button  {
@@ -109,16 +109,16 @@ ViewBaseFrame {
                     }
 
                     Connections {
-                        target: radioController
+                        target: WelleIoPlugin.RadioController
                         onIsFICCRCChanged: {
-                            if(radioController.isFICCRC)
+                            if(WelleIoPlugin.RadioController.isFICCRC)
                                 __setIsSignal(true)
                             else
                                 __setIsSignal(false)
                         }
 
                         onIsSyncChanged: {
-                            if(radioController.isSync)
+                            if(WelleIoPlugin.RadioController.isSync)
                                 __setIsSignal(true)
                             else
                                 __setIsSignal(false)
@@ -136,7 +136,7 @@ ViewBaseFrame {
             width: frame.width
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
-            text: radioController.text.trim()
+            text: WelleIoPlugin.RadioController.text.trim()
         }
     }
 
@@ -150,21 +150,21 @@ ViewBaseFrame {
             visible: stationInfo.visible
             Layout.alignment: Qt.AlignLeft
             Layout.leftMargin: Units.dp(5)
-            text: radioController.stationType
+            text: WelleIoPlugin.RadioController.stationType
         }
 
         TextRadioInfo {
             visible: stationInfo.visible
             Layout.alignment: Qt.AlignRight
             Layout.rightMargin: Units.dp(5)
-            text: (radioController.isDAB ? "DAB" : "DAB+")
-                + " " + radioController.audioMode
+            text: (WelleIoPlugin.RadioController.isDAB ? "DAB" : "DAB+")
+                + " " + WelleIoPlugin.RadioController.audioMode
         }
     }
 
     Component.onCompleted: {
-        if(radioController.isFICCRC &&
-                radioController.isSync)
+        if(WelleIoPlugin.RadioController.isFICCRC &&
+                WelleIoPlugin.RadioController.isSync)
             __setIsSignal(true)
     }
 

@@ -20,14 +20,14 @@ SettingSection {
         Layout.fillWidth: true
         text: qsTr("Enable bias tee (not from all dongles supported)")
         onClicked: {
-            guiHelper.setBiasTeeRtlSdr(checked)
+            WelleIoPlugin.GUIHelper.setBiasTeeRtlSdr(checked)
         }
     }
 
     function initDevice(isAutoDevice) {
         if(!isAutoDevice)
-            guiHelper.openRtlSdr()
+            WelleIoPlugin.GUIHelper.openRtlSdr()
 
-        guiHelper.setBiasTeeRtlSdr(enableBiasTee.checked)
+        WelleIoPlugin.GUIHelper.setBiasTeeRtlSdr(enableBiasTee.checked)
     }
 }

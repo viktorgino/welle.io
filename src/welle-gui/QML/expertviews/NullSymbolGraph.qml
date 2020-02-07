@@ -19,7 +19,7 @@ ViewBaseFrame {
     }
 
     Connections{
-        target: guiHelper
+        target: WelleIoPlugin.GUIHelper
 
         onSetNullSymbolAxis: {
             spectrum.yMax = Ymax
@@ -42,7 +42,7 @@ ViewBaseFrame {
         running: parent.visible ? true : false // Trigger new data only if spectrum is showed
         repeat: true
         onTriggered: {
-           guiHelper.updateNullSymbol();
+           WelleIoPlugin.GUIHelper.updateNullSymbol();
         }
     }
 
@@ -52,8 +52,8 @@ ViewBaseFrame {
 
     function __registerSeries() {
        if(spectrum.isWaterfall)
-           guiHelper.registerNullSymbolWaterfall(spectrum.waterfallObject);
+           WelleIoPlugin.GUIHelper.registerNullSymbolWaterfall(spectrum.waterfallObject);
        else
-           guiHelper.registerNullSymbolSeries(spectrum.spectrumObject.series(0))
+           WelleIoPlugin.GUIHelper.registerNullSymbolSeries(spectrum.spectrumObject.series(0))
     }
 }

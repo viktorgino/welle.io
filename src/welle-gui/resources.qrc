@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/WelleIoPluginRes">
         <file>QML/MainView.qml</file>
         <file>QML/RadioView.qml</file>
         <file>QML/ExpertView.qml</file>

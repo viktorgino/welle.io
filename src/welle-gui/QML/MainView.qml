@@ -188,7 +188,7 @@ ApplicationWindow {
                     MenuItem {
                         text: qsTr("Exit")
                         font.pixelSize: TextStyle.textStandartSize
-                        onTriggered: guiHelper.close()
+                        onTriggered: WelleIoPlugin.GUIHelper.close()
                     }
                 }
             }
@@ -259,7 +259,7 @@ ApplicationWindow {
                             onTriggered:  {
                                 startStationScanItem.enabled = false
                                 stopStationScanItem.enabled = true
-                                radioController.startScan()
+                                WelleIoPlugin.RadioController.startScan()
                             }
                         }
 
@@ -272,7 +272,7 @@ ApplicationWindow {
                             onTriggered:  {
                                 startStationScanItem.enabled = true
                                 stopStationScanItem.enabled = false
-                                radioController.stopScan()
+                                WelleIoPlugin.RadioController.stopScan()
                             }
                         }
 
@@ -315,7 +315,7 @@ ApplicationWindow {
                     channelNameText: channelName
                     isFavorit: favorit
                     isExpert: isExpertView
-                    onClicked: radioController.play(channelName, stationName, stationSId)
+                    onClicked: WelleIoPlugin.RadioController.play(channelName, stationName, stationSId)
                     onFavoritClicked: {
                         var favoritInvert = !favorit
                         stationList.setFavorit(stationSId, favoritInvert) // Invert favorit
@@ -358,7 +358,7 @@ ApplicationWindow {
                     Layout.preferredHeight: Units.dp(25)
                     Layout.preferredWidth: Units.dp(130)
                     onActivated: {
-                        radioController.setManualChannel(model[index])
+                        WelleIoPlugin.RadioController.setManualChannel(model[index])
                     }
                 }
             }
@@ -527,7 +527,7 @@ ApplicationWindow {
     }
 
     Connections{
-        target: radioController
+        target: WelleIoPlugin.RadioController
 
         onShowErrorMessage:{
             errorMessagePopup.text = Text;
@@ -555,7 +555,7 @@ ApplicationWindow {
     }
 
     Connections {
-        target: guiHelper
+        target: WelleIoPlugin.GUIHelper
 
         onMinimizeWindow: hide()
         onMaximizeWindow: showMaximized()
@@ -567,6 +567,6 @@ ApplicationWindow {
 
     onVisibilityChanged: {
         if(visibility === Window.Minimized)
-            guiHelper.tryHideWindow()
+            WelleIoPlugin.GUIHelper.tryHideWindow()
     }
 }

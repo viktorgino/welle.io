@@ -15,7 +15,7 @@ Item {
 
         TextStandart {
             id: fileContent
-            text: guiHelper.licenses.FileContent
+            text: WelleIoPlugin.GUIHelper.licenses.FileContent
             Layout.alignment: Qt.AlignLeft
             wrapMode: Text.Wrap
             width: parent.width
